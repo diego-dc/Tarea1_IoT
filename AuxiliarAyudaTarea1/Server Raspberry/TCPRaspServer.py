@@ -1,4 +1,5 @@
 import socket
+import Desempaquetamiento as dsmpq
 
 # "192.168.5.177"  # Standard loopback interface address (localhost)
 HOST = "192.168.5.177"#"localhost"
@@ -15,8 +16,23 @@ while True:
     while True:
         try:
             data = conn.recv(1024)
+            # si no se manda ningun dato, se cierra conexión.
             if data == b'':
                 break
+            
+            # si llegan datos completos, tenemos que trabajarlos.
+            if b'\0' in data:
+                # los guardamos en un dict el contenido del socket - si los datos son null sera un None-. 
+                # esto los guarda en la base de datos también.
+                dataD = dsmpq.parseData(data)
+
+
+            # probablemente se puede aprovechar este caso.
+            if (dataD == None):
+                print('Paquete sin datos.')
+
+
+
         except ConnectionResetError:
             break
         print(f"Recibido {data}")
