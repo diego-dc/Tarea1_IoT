@@ -97,9 +97,29 @@ def TCP_connection:
 def UDP_connection:
     while True:
         while True:
-            payload, client_address = sUDP.recvfrom(1)
-            print("Echoing data back to " + str(client_address) + ": " + payload)
-            sent = sUDP.sendto(payload, client_address)
+
+            if protocol != "4":
+                data, client_address = sUDP.recvfrom(1)
+                dataD = dsmpq.parseData(data)
+
+            else:
+                data = jf.UDP_frag_recv(conn)
+                dataD = dsmpq.parseData(data)
+            
+            print(f"Recibido {data}")
+
+            # leemos la tabla de config
+            res = dbw.read_conf()
+
+            # revisar protocolo y tipo de conexion a usar.
+            protocolo = res[0] 
+            if res[1] == "0" : 
+                transport_layer = True
+
+            if res[1] == "1" : 
+                transport_layer = False
+                break
+
 
 
 
