@@ -1,4 +1,4 @@
-int TCP_send_frag(int sock, char status, char protocolo)
+int UDP_send_frag(int sock, char status, char protocolo)
 {
     //Parte el mensaje (payload) en trozos de 1000 btyes y los manda por separado, esperando un OK con cada trozo
     printf("Sending!\n");
@@ -10,7 +10,7 @@ int TCP_send_frag(int sock, char status, char protocolo)
     {
 
         // Generamos el siguiente trozo
-        int size = fmin(PACK_LEN, payloadLen - i);
+        int size = fmin(PACK_LEN, payloadLen - i); // PACK_LEN = tamano de paquete
         char *pack = malloc(size);
         memcpy(pack, &(payload[i]), size);
 
@@ -22,26 +22,26 @@ int TCP_send_frag(int sock, char status, char protocolo)
             ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
         }
 
-        // wait for confirmation
-        int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+        // wait for confirmation (no necesario)
+        // int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
         // Error occurred during receiving
-        if (len < 0)
+        // if (len < 0)
+        // {
+        //     //En caso de error abortamos
+        //     ESP_LOGE(TAG, "recv failed: errno %d", errno);
+        //     break;
+        // }
+        // else
+        // {
+        rx_buffer[len] = 0;
+        char OK_r = rx_buffer[0];
+        if (!OK_r)
         {
-            //En caso de error abortamos
-            ESP_LOGE(TAG, "recv failed: errno %d", errno);
-            break;
-        }
-        else
-        {
-            rx_buffer[len] = 0;
-            char OK_r = rx_buffer[0];
-            if (!OK_r)
-            {
-                ESP_LOGE(TAG, "Server error in fragmented send.");
-                free(payload);
-                return -1;
+            ESP_LOGE(TAG, "Server error in fragmented send.");
+            free(payload);
+            return -1;
             }
-        }
+        // }
     }
     //el último mensaje es solo un \0 para avisarle al server que terminamos
     int err = send(sock, "\0", 1, 0);
