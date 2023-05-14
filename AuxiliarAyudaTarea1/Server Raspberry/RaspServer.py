@@ -50,25 +50,28 @@ def TCP_connection:
                 data = conn.recv(1024)
 
                 # verificar si es un saludo
-
-                # si no se manda ningun dato, se cierra conexión.
-                if data == b'':
-                    break
-
-                # vemos que protocolo debería llegar.
-                if protocol != "4":
-                # si llegan datos completos, tenemos que trabajarlos.
-                    if b'\0' in data:
-                        # los guardamos en un dict el contenido del socket - si los datos son null sera un None-. 
-                        # esto los guarda en la base de datos también.
-                        dataD = dsmpq.parseData(data)
-                        # probablemente se puede aprovechar este caso.
-                        if (dataD == None):
-                            print('Paquete sin datos.')
+                if data == b'00':
+                    print("soy un saludo")
 
                 else:
-                    data = jf.TCP_frag_recv(conn)
-                    dataD = dsmpq.parseData(data)
+                    # si no se manda ningun dato, se cierra conexión.
+                    if data == b'':
+                        break
+
+                    # vemos que protocolo debería llegar.
+                    if protocol != "4":
+                    # si llegan datos completos, tenemos que trabajarlos.
+                        if b'\0' in data:
+                            # los guardamos en un dict el contenido del socket - si los datos son null sera un None-. 
+                            # esto los guarda en la base de datos también.
+                            dataD = dsmpq.parseData(data)
+                            # probablemente se puede aprovechar este caso.
+                            if (dataD == None):
+                                print('Paquete sin datos.')
+
+                    else:
+                        data = jf.TCP_frag_recv(conn)
+                        dataD = dsmpq.parseData(data)
 
             except ConnectionResetError:
                 break
@@ -102,6 +105,7 @@ def UDP_connection:
 
 while True:
     # Elegir la configuración
+    print("Configurando socket según corresponda")
 
     if transport_layer:
         conf_TCP()
