@@ -47,27 +47,27 @@ def TCP_connection:
         print(f'Conectado por alguien ({addr[0]}) desde el puerto {addr[1]}')
         while True:
             try:
-                data = conn.recv(1024)
-
-                # verificar si es un saludo
-                if data == b'00':
-                    print("soy un saludo?")
-
-                else:
                     # si no se manda ningun dato, se cierra conexión.
                     if data == b'':
                         break
 
                     # vemos que protocolo debería llegar.
                     if protocol != "4":
-                    # si llegan datos completos, tenemos que trabajarlos.
+                        data = conn.recv(1024)
+                        # si llegan datos completos, tenemos que trabajarlos.
                         if b'\0' in data:
                             # los guardamos en un dict el contenido del socket - si los datos son null sera un None-. 
                             # esto los guarda en la base de datos también.
                             dataD = dsmpq.parseData(data)
+            
                             # probablemente se puede aprovechar este caso.
-                            if (dataD == None):
-                                print('Paquete sin datos.')
+                            if (dataD["OK"] == "0"):
+                                print('es un saludo')
+                                print(f"Recibido {data}")
+                                res = dbw.read_conf()
+                                print(f"Enviando {res}")
+                                conn.send(res.encode())
+                                break
 
                     else:
                         data = jf.TCP_frag_recv(conn)

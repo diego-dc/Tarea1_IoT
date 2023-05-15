@@ -31,18 +31,18 @@ def parseData(packet):
     data = packet[10:]
     headerD = headerDict(header)
     dataD = dataDict(headerD["protocol"], data)
-    if dataD is not None:
+    if dataD is not None and dataD["OK"] is not "0": # si es 0 es un saludo
         save_data(headerD, dataD)
         save_log(headerD, dataD)
         # esto puede estar mal, ya que, si rellenamos la perdida de paquetes siempre sera el mismo size. 
-        data_length = data.len()
+        data_length = headerD["length"]
         save_loss(headerD, dataD, data_length)
         
     return None if dataD is None else {**headerD, **dataD}
 
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
-    protocol_unpack = ["<BBf", "<2BfBfBf", "<2BfBfB2f", "2BfBfB8f", "2BfBfB2001f2000f2000f"]
+    protocol_unpack = ["B", "<2Bf", "<2BfBfBf", "<2BfBfB2f", "2BfBfB8f", "2BfBfB2001f2000f2000f"]
     return unpack(protocol_unpack[protocol], data)
 
 def headerDict(data):
@@ -52,7 +52,7 @@ def headerDict(data):
     return {"ID_device": id_device, "MAC":MAC, "protocol":protocol, "transport_layer":transport_layer, "length":leng_msg}
 
 def dataDict(protocol:int, data):
-    if protocol not in [0, 1, 2, 3, 4]:
+    if protocol not in [0, 1, 2, 3, 4, 5]:
         print("Error: protocol doesnt exist")
         return None
     def protFunc(protocol, keys):
@@ -62,12 +62,13 @@ def dataDict(protocol:int, data):
         return p
     
     # el "OK" es un 1 que indica el incio de los datos, se puede utilizar como 0 para señalizar otra cosa
-    p0 = ["OK", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
-    p1 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co"]
-    p2 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS"]
-    p3 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "amp_x", "frec_x", "amp_y", "frec_y", "amp_z", "frec_z"]
-    p4 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "acc_x", "acc_y", "acc_z"]
-    p = [p0, p1, p2, p3, p4]
+    p0 = ["OK"] #creo que esto es equivalente(?)
+    p1 = ["OK", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
+    p2 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co"]
+    p3 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS"]
+    p4 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "amp_x", "frec_x", "amp_y", "frec_y", "amp_z", "frec_z"]
+    p5 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "acc_x", "acc_y", "acc_z"]
+    p = [p0, p1, p2, p3, p4, p5]
 
     try:
         return protFunc(protocol, p[protocol])(data)
