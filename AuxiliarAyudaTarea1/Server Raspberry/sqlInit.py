@@ -55,7 +55,7 @@ for create_table in create_tables:
 
 # inserta la única row de conf con la configuración inicial (protocol_id = 1, transport_layer = 0 o tcp)
 cur.execute("INSERT INTO Conf (ProtocolId, TransportLayer) values (?, ?)", (1, TCP))
-
+conn.commit()
 conn.close()
 
 # inicializa la BDD
