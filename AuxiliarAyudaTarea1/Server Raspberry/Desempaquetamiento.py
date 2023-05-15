@@ -22,6 +22,8 @@ def response(change:bool=False, status:int=255, protocol:int=255):
     CHANGE = 1 if change else 0
     return pack("<BBBB", OK, CHANGE, status, protocol)
 
+def confResponse(protocol, transport_layer):
+    return pack("<BB", protocol, transport_layer)
 
 # Parsea la info del paquete recibido
 # Retorna null si es null la data.
