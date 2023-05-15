@@ -84,7 +84,9 @@ char* dataprotocol0(){
     // long t = 0;
     // memcpy((void*) &(msg[1]), (void*) &t, 4);
 
-	time_t time = gettimeofday();
+	struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+	time_t time = current_time.tv_sec
 	msg[2] = time; //4 bytes
 	memcpy((void*) &(msg[1]), (void*) &time, 4);
 
@@ -101,7 +103,9 @@ char* dataprotocol1(){
     float batt = batt_sensor();
     msg[1] = batt; //1 byte
 
-	time_t time = gettimeofday();
+	struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+	time_t time = current_time.tv_sec
 	memcpy((void*) &(msg[2]), (void*) &time, 4); //4 bytes
 
 	char temp = THPC_sensor_temp(); //1 byte
@@ -128,7 +132,9 @@ char* dataprotocol2(){
     float batt = batt_sensor();
     msg[1] = batt; //1 byte
 
-	time_t time = gettimeofday();
+	struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+	time_t time = current_time.tv_sec
 	memcpy((void*) &(msg[2]), (void*) &time, 4); //4 bytes
 
 	char temp = THPC_sensor_temp(); //1 byte
@@ -158,7 +164,9 @@ char* dataprotocol3(){
     float batt = batt_sensor();
     msg[1] = batt; //1 byte
 
-	time_t time = gettimeofday();
+	struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+	time_t time = current_time.tv_sec
 	memcpy((void*) &(msg[2]), (void*) &time, 4); //4 bytes
 
 	char temp = THPC_sensor_temp(); //1 byte
@@ -208,7 +216,9 @@ char* dataprotocol4(){
     float batt = batt_sensor();
     msg[1] = batt; //1 byte
 
-	time_t time = gettimeofday();
+	struct timeval current_time;
+	gettimeofday(&current_time, NULL);
+	time_t time = current_time.tv_sec
 	memcpy((void*) &(msg[2]), (void*) &time, 4); //4 bytes
 
 	char temp = THPC_sensor_temp(); //1 byte
@@ -240,7 +250,7 @@ char* dataprotocol4(){
 
 '''
 char* dataprotocol1(){
-    
+
     char* msg = malloc(dataLength(2));
 
     float batt = batt_sensor();
