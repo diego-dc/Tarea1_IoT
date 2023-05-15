@@ -51,7 +51,7 @@ def TCP_connection:
 
                 # verificar si es un saludo
                 if data == b'00':
-                    print("soy un saludo")
+                    print("soy un saludo?")
 
                 else:
                     # si no se manda ningun dato, se cierra conexión.

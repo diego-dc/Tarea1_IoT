@@ -33,6 +33,10 @@ def parseData(packet):
     dataD = dataDict(headerD["protocol"], data)
     if dataD is not None:
         save_data(headerD, dataD)
+        save_log(headerD, dataD)
+        # esto puede estar mal, ya que, si rellenamos la perdida de paquetes siempre sera el mismo size. 
+        data_length = data.len()
+        save_loss(headerD, dataD, data_length)
         
     return None if dataD is None else {**headerD, **dataD}
 
