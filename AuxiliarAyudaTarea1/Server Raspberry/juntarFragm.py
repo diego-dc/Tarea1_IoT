@@ -23,11 +23,15 @@ def UDP_frag_recv(s):
     while True:
         try:
 
+            # ACA AGREGAR ALGO PARA MANEJAR EL CASO EN QUE SE PIERDAN PAQUETES Y DATOS 
+
             data, addr = s.recvfrom(1024)
             if data == b'\0':
                 break
             else:
                 doc += data
+
+
         except TimeoutError:
             raise
         except Exception:
