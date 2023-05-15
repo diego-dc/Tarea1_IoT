@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
-#include "sdkconfig.h"
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -22,11 +21,12 @@
 #define HOST_IP_ADDR ""
 #endif
 
+#include "packeting.h"
+#include "sdkconfig.h"
+
 #define PORT CONFIG_EXAMPLE_PORT
 
 static const char *TAG = "example";
-static const char *payload = "Message from ESP32 ";
-
 
 void tcp_client(void)
 {
@@ -47,7 +47,6 @@ void tcp_client(void)
         struct sockaddr_storage dest_addr = { 0 };
         ESP_ERROR_CHECK(get_addr_from_stdin(PORT, SOCK_STREAM, &ip_protocol, &addr_family, &dest_addr));
 #endif
-
         int sock =  socket(addr_family, SOCK_STREAM, ip_protocol);
         if (sock < 0) {
             ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
@@ -62,26 +61,29 @@ void tcp_client(void)
         }
         ESP_LOGI(TAG, "Successfully connected");
 
-        while (1) {
-            int err = send(sock, payload, strlen(payload), 0);
-            if (err < 0) {
-                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-                break;
-            }
-
-            int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
-            // Error occurred during receiving
-            if (len < 0) {
-                ESP_LOGE(TAG, "recv failed: errno %d", errno);
-                break;
-            }
-            // Data received
-            else {
-                rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-                ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
-                ESP_LOGI(TAG, "%s", rx_buffer);
-            }
+        // MENSAJE DE SALUDO
+        char* payload = mensaje(1,0);
+        ESP_LOGI(TAG, "largo del mensaje: %d", strlen(payload));
+        err = send(sock, payload, strlen(payload), 0); // mando mensaje de saludo por TCP
+        if (err < 0) {
+            ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+            break;
         }
+
+        int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+        // Error occurred during receiving
+        if (len < 0) {
+            ESP_LOGE(TAG, "recv failed: errno %d", errno);
+            break;
+        }
+        // Data received
+        else {
+            rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+            ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
+            ESP_LOGI(TAG, "%s", rx_buffer);
+        }
+
+
 
         if (sock != -1) {
             ESP_LOGE(TAG, "Shutting down socket and restarting...");
