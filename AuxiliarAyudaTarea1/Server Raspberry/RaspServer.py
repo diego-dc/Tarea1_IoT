@@ -57,12 +57,15 @@ def TCP_connection():
                     # esto los guarda en la base de datos también.
                     dataD = dsmpq.parseData(data)
 
-                    # probablemente se puede aprovechar este caso.
+                    # Este sería el caso de un saludo.
                     if (dataD["OK"] == 0):
                         print('es un saludo')
-                        print(f"Recibido {data}")
+                        print(f"Recibido {data}") 
+                        # extraemos de la db la conf a utilizar. 
                         res = dbw.read_conf()
                         print(f"Enviando {res}")
+                        res = dsmpq.confResponse(res[0], res[1]) # revisar si esta tomando bien los datos.
+                        # enviamos la conf al cliente.
                         conn.send(res.encode())
                         break
 
