@@ -1,15 +1,15 @@
-# Tarea1_IoT_Template
+# Tareas_IoT
 
-Este es un template básico con una estructura de tarea definida y que busca ayudarlos a organizarla bien
+En este repositorio se desarrollarán las tareas del curso Diseño de Sistemas de Internet de las Cosas - CC5326-1, de la Universidad de Chile. 
 
-## Estructura del Template
+## T1
 
-Proyecto  
-|  
-|--- Raspberry-|--- Server TCP   
-|              |--- Server UDP  
-|  
-|--- ESP32-|---Cliente TCP  
-           |---Cliente UDP  
+Conexión via paquetes TCP y UDP, utilizando una ESP32 y una Raspberry. La idea es alternar entre diferentes protocolos de comunicación y que el servidor (raspberry), tanto como el cliente (ESP32), sepan manejar estos procesos. 
 
-# BORRE ESTO Y HAGA UNA DESCRIPCIÓN DE SU TAREA AQUÍ
+## T2
+
+Conexión via bluetooth, utilizando una ESP32 y una Raspberry. La idea es alternar entre diferentes protocolos de comunicación y que el servidor (raspberry), tanto como el cliente (ESP32), sepan manejar estos procesos. 
+
+## T1
+
+Consiste de una integración de los dos sistemas desarrollados anteriormente en la T1 y T2.
