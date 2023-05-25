@@ -12,6 +12,7 @@ def save_log(header, data):
             "INSERT INTO Logs (DeviceId, MAC, TransportLayer, ProtocolId) VALUES (?, ?, ?, ?)",
             (header["device_id"], header["MAC"], header["transport_layer"], header["protocol_id"], data["timestamp"])
         )
+        cur.commit()
         
 
 def save_loss(header, data, data_length):
@@ -24,6 +25,7 @@ def save_loss(header, data, data_length):
             "INSERT INTO Loss (Latency, Attempts) VALUES (?, ?)",
             (latency, attempts)
             )
+        cur.commit()
 
 def save_data(header, data):
     with sql.connect("DB.sqlite") as con:
@@ -47,6 +49,7 @@ def save_data(header, data):
             queries[header["protocol"]],
             params[header["protocol"]]
         )
+        cur.commit()
 
 def read_conf():
     with sql.connect("DB.sqlite") as con:
@@ -68,3 +71,4 @@ def update_conf(protocol_id, transport_layer):
             ''',
             (protocol_id, transport_layer)
         )
+        cur.commit()
