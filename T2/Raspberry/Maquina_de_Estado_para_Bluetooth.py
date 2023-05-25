@@ -1,5 +1,6 @@
 import pygatt
 from time import sleep
+import Desempaquetamiento as dsmpq
 
 # Definir los UUIDs de los servicios y características del dispositivo BLE
 DEVICE_ADDRESS = '00:11:22:33:44:55'
@@ -41,6 +42,16 @@ def disconnect():
 # Función para manejar notificaciones de características
 def handle_notification(handle, value):
     print('Notificación recibida:', value.hex())
+    # de la notificación recupera un bytearray
+    # lo que rescata acá es el paquete(?)
+    data = value # verificar si llegan los bytes que esperamos?
+
+    print(data)
+    
+    # procesar datos y guardarlos en la base de datos
+    dsmpq.parseData(data)
+    # quizas ver el caso en que hay que fragmentar???
+
 
 # Bucle principal de la máquina de estado
 while True:
