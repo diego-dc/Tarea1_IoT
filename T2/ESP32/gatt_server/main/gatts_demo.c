@@ -33,12 +33,14 @@
 #include "esp_gatt_common_api.h"
 
 #include "sdkconfig.h"
+#include <packeting.c>
+
 
 #define GATTS_TAG "GATTS_DEMO"
 
 ///Declare the static function
 static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
-static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
+// static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
 
 #define GATTS_SERVICE_UUID_TEST_A   0x00FF
 #define GATTS_CHAR_UUID_TEST_A      0xFF01
@@ -54,7 +56,7 @@ static void gatts_profile_b_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
 
 static uint8_t char1_str[] = {0x11,0x22,0x33};
 static esp_gatt_char_prop_t a_property = 0;
-static esp_gatt_char_prop_t b_property = 0;
+// static esp_gatt_char_prop_t b_property = 0;
 
 static esp_attr_value_t gatts_demo_char1_val =
 {
@@ -159,10 +161,6 @@ static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {
         .gatts_cb = gatts_profile_a_event_handler,
         .gatts_if = ESP_GATT_IF_NONE,       /* Not get the gatt_if, so initial is ESP_GATT_IF_NONE */
     },
-    [PROFILE_B_APP_ID] = {
-        .gatts_cb = gatts_profile_b_event_handler,                   /* This demo does not implement, similar as profile A */
-        .gatts_if = ESP_GATT_IF_NONE,       /* Not get the gatt_if, so initial is ESP_GATT_IF_NONE */
-    },
 };
 
 typedef struct {
@@ -171,7 +169,7 @@ typedef struct {
 } prepare_type_env_t;
 
 static prepare_type_env_t a_prepare_write_env;
-static prepare_type_env_t b_prepare_write_env;
+// static prepare_type_env_t b_prepare_write_env;
 
 void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
@@ -336,11 +334,12 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         esp_gatt_rsp_t rsp;
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
         rsp.attr_value.handle = param->read.handle;
-        rsp.attr_value.len = 4;
-        rsp.attr_value.value[0] = 0xde;
-        rsp.attr_value.value[1] = 0xed;
-        rsp.attr_value.value[2] = 0xbe;
-        rsp.attr_value.value[3] = 0xef;
+
+        rsp.attr_value.len = messageLength(1);
+        char* msj = mensaje(2,1);
+        for (int i=0; i < sizeof(msj); i++) {
+            rsp.attr_value.value[i] = msj[i];
+        }
         esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id,
                                     ESP_GATT_OK, &rsp);
         break;
