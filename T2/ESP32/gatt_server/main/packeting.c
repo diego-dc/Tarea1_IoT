@@ -18,21 +18,26 @@ unsigned short messageLength(char protocol){ //calcula tamano del mensaje
 
 //Genera el header de un mensaje, con la MAC, el protocolo, status, y el largo del mensaje.
 char* header(char protocol, char transportLayer){
+	printf(" ");
 	char* head = malloc(12);
-
+	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
 	char* ID = "D1";
 	memcpy((void*) &(head[0]), (void*) ID, 2);
+	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
 	uint8_t* MACaddrs = malloc(6);
 	esp_efuse_mac_get_default(MACaddrs);
 	for (int i=0; i <= sizeof(MACaddrs); i++) {
 		ESP_LOGI("HOLA", "MAC: %u", MACaddrs[i]);
 	}
-	memcpy((void*) &(head[2]), (void*) MACaddrs, 6);//consigue el MACaddrs
+	char mac[6] = {76, 235, 214, 98, 21, 186};
+	memcpy((void*) &(head[2]), (void*) mac, 6);//consigue el MACaddrs
 	head[8]= transportLayer;
 	head[9]= protocol;
 	unsigned short dataLen = dataLength(protocol); //revisa el tamano del protocolo
 	memcpy((void*) &(head[10]), (void*) &dataLen, 2);
 	free(MACaddrs);
+
+	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
 	return head;
 }
 

@@ -335,10 +335,12 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
         rsp.attr_value.handle = param->read.handle;
 
-        rsp.attr_value.len = messageLength(1);
+        rsp.attr_value.len = messageLength(2);
         char* msj = mensaje(2,1);
+        ESP_LOGI(GATTS_TAG, "size: %d", sizeof(msj));
         for (int i=0; i < sizeof(msj); i++) {
             rsp.attr_value.value[i] = msj[i];
+            ESP_LOGI(GATTS_TAG, "valor %d: %d", i, msj[i]);
         }
         esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id,
                                     ESP_GATT_OK, &rsp);
