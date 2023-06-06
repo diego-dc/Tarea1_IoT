@@ -17,39 +17,65 @@ unsigned short messageLength(char protocol){ //calcula tamano del mensaje
 }
 
 //Genera el header de un mensaje, con la MAC, el protocolo, status, y el largo del mensaje.
-char* header(char protocol, char transportLayer){
-	printf(" ");
-	char* head = malloc(12);
-	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
+// char* header(char protocol, char transportLayer){
+// 	char* head = malloc(12);
+
+// 	char* ID = "D1";
+// 	memcpy((void*) &(head[0]), (void*) ID, 2);
+// 	uint8_t* MACaddrs = malloc(6);
+// 	esp_efuse_mac_get_default(MACaddrs);
+// 	for (int i=0; i <= sizeof(MACaddrs); i++) {
+// 		ESP_LOGI("HOLA", "MAC: %u", MACaddrs[i]);
+// 	}
+// 	memcpy((void*) &(head[2]), (void*) MACaddrs, 6);//consigue el MACaddrs
+// 	head[8]= transportLayer;
+// 	head[9]= protocol;
+// 	unsigned short dataLen = dataLength(protocol); //revisa el tamano del protocolo
+// 	memcpy((void*) &(head[10]), (void*) &dataLen, 2);
+// 	free(MACaddrs);
+// 	return head;
+// }
+
+// Arma un paquete para el protocolo de inicio, que busca solo respuesta
+char* dataprotocol00(char* head){
+	//seteo del header
 	char* ID = "D1";
 	memcpy((void*) &(head[0]), (void*) ID, 2);
-	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
 	uint8_t* MACaddrs = malloc(6);
 	esp_efuse_mac_get_default(MACaddrs);
 	for (int i=0; i <= sizeof(MACaddrs); i++) {
 		ESP_LOGI("HOLA", "MAC: %u", MACaddrs[i]);
 	}
-	char mac[6] = {76, 235, 214, 98, 21, 186};
-	memcpy((void*) &(head[2]), (void*) mac, 6);//consigue el MACaddrs
-	head[8]= transportLayer;
-	head[9]= protocol;
-	unsigned short dataLen = dataLength(protocol); //revisa el tamano del protocolo
+	memcpy((void*) &(head[2]), (void*) MACaddrs, 6);//consigue el MACaddrs
+	head[8] = 0;
+	head[9]= 0;
+	unsigned short dataLen = dataLength(0);
 	memcpy((void*) &(head[10]), (void*) &dataLen, 2);
 	free(MACaddrs);
 
-	ESP_LOGI("HOLA", "head size: %d", sizeof(head));
-	return head;
-}
-
-// Arma un paquete para el protocolo de inicio, que busca solo respuesta
-char* dataprotocol00(){
     char* msg = malloc(dataLength(0));
     msg[0] = 1;
     return msg;
 }
 
 // Arma un paquete para el protocolo 0, con la bateria
-char* dataprotocol0(){
+char* dataprotocol0(char* head){
+	//seteo del header
+	char* ID = "D1";
+	memcpy((void*) &(head[0]), (void*) ID, 2);
+	uint8_t* MACaddrs = malloc(6);
+	esp_efuse_mac_get_default(MACaddrs);
+	for (int i=0; i <= sizeof(MACaddrs); i++) {
+		ESP_LOGI("HOLA", "MAC: %u", MACaddrs[i]);
+	}
+	memcpy((void*) &(head[2]), (void*) MACaddrs, 6);//consigue el MACaddrs
+	head[8] = 0;
+	head[9]= 1;
+	unsigned short dataLen = dataLength(1);
+	memcpy((void*) &(head[10]), (void*) &dataLen, 2);
+	free(MACaddrs);
+
+
     //seteamos el largo de la data (6 bytes)
     char* msg = malloc(dataLength(1));
 	msg[0] = 1; //1 byte
@@ -70,7 +96,22 @@ char* dataprotocol0(){
 
 }
 
-char* dataprotocol1(){
+char* dataprotocol1(char* head){
+	//seteo del header
+	char* ID = "D1";
+	memcpy((void*) &(head[0]), (void*) ID, 2);
+	uint8_t* MACaddrs = malloc(6);
+	esp_efuse_mac_get_default(MACaddrs);
+	for (int i=0; i <= sizeof(MACaddrs); i++) {
+		ESP_LOGI("HOLA", "MAC: %u", MACaddrs[i]);
+	}
+	memcpy((void*) &(head[2]), (void*) MACaddrs, 6);//consigue el MACaddrs
+	head[8] = 0;
+	head[9]= 2;
+	unsigned short dataLen = dataLength(2);
+	memcpy((void*) &(head[10]), (void*) &dataLen, 2);
+	free(MACaddrs);
+
     //seteamos el largo de la data (16 bytes)
     char* msg = malloc(dataLength(2));
 	msg[0] = 1; //1 byte
@@ -98,8 +139,8 @@ char* dataprotocol1(){
     return msg;
 
 }
-
-char* dataprotocol2(){
+/*
+char* dataprotocol2(char* head){
     //seteamos el largo de la data (20 bytes)
     char* msg = malloc(dataLength(3));
 	msg[0] = 1; //1 byte
@@ -131,7 +172,7 @@ char* dataprotocol2(){
 
 }
 
-char* dataprotocol3(){
+char* dataprotocol3(char* head){
     //seteamos el largo de la data (44 bytes)
     char* msg = malloc(dataLength(4));
 	msg[0] = 1; //1 byte
@@ -181,7 +222,7 @@ char* dataprotocol3(){
     return msg;
 
 }
-
+*/
 /*
 char* dataprotocol4(){
     //seteamos el largo de la data (24016 bytes)
@@ -220,40 +261,45 @@ char* dataprotocol4(){
     return msg;
 
 }
-*/
+
 char* mensaje (char protocol, char transportLayer){
 	char* mnsj = malloc(messageLength(protocol));
 	mnsj[messageLength(protocol)-1]= '\0';
-	char* hdr = header(protocol, transportLayer);//crea el mensaje completo
+	// char* hdr = header(protocol, transportLayer);//crea el mensaje completo
 	char* data;
+	char* head = malloc(12);
+
 	switch (protocol) { //crea cada uno de los protocolos, cambiar
 		case 0:
-			data = dataprotocol00();
+			data = dataprotocol00(head);
 			break;
 		case 1:
-			data = dataprotocol0();
+			data = dataprotocol0(head);
 			break;
 		case 2:
-			data = dataprotocol1();
+			data = dataprotocol1(head);
 			break;
 		case 3:
-			data = dataprotocol2();
+			data = dataprotocol2(head);
 			break;
 		case 4:
-			data = dataprotocol3();
+			data = dataprotocol3(head);
 			break;
-		/*
 		case 5:
 			data = dataprotocol4();
 			break;
-		*/
 		default:
-			data = dataprotocol0();
+			data = dataprotocol0(head);
 			break;
 	}
-	memcpy((void*) mnsj, (void*) hdr, 12);
+	memcpy((void*) mnsj, (void*) head, 12);
 	memcpy((void*) &(mnsj[12]), (void*) data, dataLength(protocol));
-	free(hdr);
+	free(head);
 	free(data);
 	return mnsj;
+	char* valor_impreso = malloc(18);
+	valor_impreso = {0x44, 0x31, 0x4c, 0xeb, 0xd6, 0x62, 0x15, 0xba, 0x00, 0x00, 0x06, 0x01, 0x4c, 0x64, 0x7e, 0x89, 0xf4, 0x0};
+
+	return valor_impreso;
 }
+*/
