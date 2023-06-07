@@ -47,7 +47,7 @@ def handle_notification(handle, value):
     data = value # verificar si llegan los bytes que esperamos?
 
     print(data)
-    
+
     # procesar datos y guardarlos en la base de datos
     dsmpq.parseData(data)
     # quizas ver el caso en que hay que fragmentar???
