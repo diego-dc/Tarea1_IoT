@@ -78,17 +78,17 @@ char THPC_sensor_temp(){
 }
 
 char THPC_sensor_hum(){
-    float n =(float) floatrand(30, 80);
+    char n =(char) floatrand(30, 80);
     // (float) 30 + (rand() %51);  <-- Esta no genera decimales creo.
     return n;
 }
 
-char THPC_sensor_pres(){
-    float n =(char) 1000 + (rand() %201);
+float THPC_sensor_pres(){
+    float n =(float) 1000 + (floatrand() %201);
     return n;
 }
 
-char THPC_sensor_co2(){
+float THPC_sensor_co2(){
     float n =(float) floatrand(30, 200);
     return n;
 }

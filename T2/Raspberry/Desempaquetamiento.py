@@ -28,27 +28,36 @@ def confResponse(protocol, transport_layer):
 # Parsea la info del paquete recibido
 # Retorna null si es null la data.
 # Retorna un diccionario del paquete completo si no.
-def parseData(packet):
-    print("------- comenzando desempaquetamiento ----------")
+def parseData(packet, attempts=1):
+    print("\n")
+    print("------- COMENZANDO DESEMPAQUETAMIENTO ----------\n")
     header = packet[:12]
     data = packet[12:]
-    print("- Recuperando Header: ")
+    print(f"- Header bytes: {header} " )
+    print(f"- Data bytes:  {data}" )
+    print("\n--- Recuperando Header --- ")
     headerD = headerDict(header)
-    print(f"- Recuperando data - ID_protocol({headerD['protocol']}): ")
-    dataD = dataDict(headerD["protocol"], data)
-    if dataD is not None and dataD["val"] is not "0": # si es 0 es un saludo
-        print("---------- Guardando Data -----------")
+    if data:
+        print(f"\n--- Recuperando data - ID_protocol({headerD['protocol']}) --- ")
+        dataD = dataDict(headerD["protocol"], data)
+        if dataD is not None:
+            for key,value in dataD.items():
+                print(f'{key} : {value}')
+    if dataD is not None and dataD["val"] is not 0: # si es 0 es un saludo
+        print("\n---------- Guardando Data -----------\n")
         save_data(headerD, dataD)
         print("se guarda data")
         save_log(headerD, dataD)
         print("se guarda logs")
         # esto puede estar mal, ya que, si rellenamos la perdida de paquetes siempre sera el mismo size.
         data_length = headerD["length"]
-        #save_loss(headerD, dataD, data_length)
-        #print("se guarda perdida")
-        print("------------ Desempaquetamiento Exitoso ------------")
-
-    return None if dataD is None else {**headerD, **dataD}
+        save_loss(headerD, dataD, attempts) # TODO ver lo de los attempts
+        print("se guarda perdida")
+        print("\n------------ Desempaquetamiento Exitoso ------------\n")
+    if dataD is None :
+        print("\n-- ES UN SALUDO --\n")
+        return None 
+    else: {**headerD, **dataD}
 
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
@@ -61,7 +70,6 @@ def headerDict(data):
     id_device, M1, M2, M3, M4, M5, M6, transport_layer, protocol, leng_msg = unpack("<h8Bh", data)
     # esto porque el MAC va separado por puntos
     MAC = ".".join([hex(x)[2:] for x in [M1, M2, M3, M4, M5, M6]])
-    print("---- HeaderD ---- ")
     print("ID_device:" + str(id_device))
     print("MAC:" + str(MAC))
     print("protocol:" + str(protocol))
