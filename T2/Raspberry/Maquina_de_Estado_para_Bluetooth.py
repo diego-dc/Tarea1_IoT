@@ -30,6 +30,7 @@ def handle_connection_event(event):
 def connect():
     global state
     state = STATE_CONNECTING
+    adapter.start()
     device = adapter.connect(DEVICE_ADDRESS, address_type=pygatt.BLEAddressType.random, timeout=10, auto_reconnect=True)
     device.subscribe(CHARACTERISTIC_UUID, callback=handle_notification)
 
