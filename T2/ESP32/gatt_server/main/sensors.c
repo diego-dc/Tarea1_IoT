@@ -84,7 +84,7 @@ char THPC_sensor_hum(){
 }
 
 float THPC_sensor_pres(){
-    float n =(float) 1000 + (floatrand() %201);
+    float n =floatrand(1000.0, 1200.0);
     return n;
 }
 

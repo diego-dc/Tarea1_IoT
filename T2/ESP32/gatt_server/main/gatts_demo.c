@@ -335,8 +335,8 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
         rsp.attr_value.handle = param->read.handle;
         rsp.attr_value.len = messageLength(1);
-        char* msj0 = dataprotocol0;
-        ESP_LOGI(GATTS_TAG, "size: %d", sizeof(msj));
+        char* header = malloc(12);
+        char* msj0 = dataprotocol0(header);
         for (int i=0; i < messageLength(1); i++) {
             rsp.attr_value.value[i] = msj0[i];
             ESP_LOGI(GATTS_TAG, "valor %d: %d", i, msj0[i]);
