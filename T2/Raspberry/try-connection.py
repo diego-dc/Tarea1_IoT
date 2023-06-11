@@ -29,3 +29,5 @@ def conectarMac(self):
             finally:
                 self.adapter.stop()
         print("Termino de test de conexión")
+
+conectarMac()
