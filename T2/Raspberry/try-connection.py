@@ -12,6 +12,7 @@ def conectarMac():
         while(qty<100):
             try:
                 adapter = pygatt.GATTToolBackend()
+                adapter.start()
                 device = adapter.connect(MAC, address_type=pygatt.BLEAddressType.random,timeout=2.0)
                 print('Se conecto!')
                 characteristics = device.discover_characteristics()
