@@ -334,15 +334,12 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         esp_gatt_rsp_t rsp;
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
         rsp.attr_value.handle = param->read.handle;
-
-        rsp.attr_value.len = 18;
-        char msj00[13] = { (char)0x44, (char)0x31, (char)0x4c, (char)0xeb, (char)0xd6, (char)0x62, (char)0x15, (char)0xba, (char)0x10, (char)0x00, (char)0x14, (char)0x01, (char)0x00};
-        char msj0[18] = { (char)0x44, (char)0x31, (char)0x4c, (char)0xeb, (char)0xd6, (char)0x62, (char)0x15, (char)0xba, (char)0x30, (char)0x00, (char)0x06, (char)0x01, (char)0x4c, (char)0x64, (char)0x7e, (char)0x89, (char)0xf4, (char)0x00 };
-        char msj1[28] = { (char)0x44, (char)0x31, (char)0x4c, (char)0xeb, (char)0xd6, (char)0x62, (char)0x15, (char)0xba, (char)0x30, (char)0x00, (char)0x06, (char)0x01, (char)0x4c, (char)0x64, (char)0x7e, (char)0x89, (char)0xf4, (char)0x00, (char) 0x05, (char)0x64, (char)0x32, (char)0x24, (char)0x23, (char)0x05, (char)0x21, (char)0x03, (char)0x15, (char)0x03};
+        rsp.attr_value.len = messageLength(1);
+        char* msj0 = dataprotocol0;
         ESP_LOGI(GATTS_TAG, "size: %d", sizeof(msj));
-        for (int i=0; i < sizeof(msj); i++) {
-            rsp.attr_value.value[i] = msj[i];
-            ESP_LOGI(GATTS_TAG, "valor %d: %d", i, msj[i]);
+        for (int i=0; i < messageLength(1); i++) {
+            rsp.attr_value.value[i] = msj0[i];
+            ESP_LOGI(GATTS_TAG, "valor %d: %d", i, msj0[i]);
         }
         esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id,
                                     ESP_GATT_OK, &rsp);
