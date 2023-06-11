@@ -3,7 +3,7 @@ from time import sleep
 import Desempaquetamiento as dsmpq
 
 # Definir los UUIDs de los servicios y características del dispositivo BLE
-DEVICE_ADDRESS = '00:11:22:33:44:55'
+DEVICE_ADDRESS = '4C:EB:D6:62:15:BA'
 SERVICE_UUID = '0000fff0-0000-1000-8000-00805f9b34fb'
 CHARACTERISTIC_UUID = '0000fff1-0000-1000-8000-00805f9b34fb'
 

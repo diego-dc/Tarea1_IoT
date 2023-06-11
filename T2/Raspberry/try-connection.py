@@ -2,19 +2,17 @@ import time
 import logging
 import pygatt
 
-
-def conectarMac(self):
+MAC = '4C:EB:D6:62:15:BA'
+def conectarMac():
         # se conecta mediante BLE a un dispostivo disponible
-        indx = self.ui.selec_7.currentIndex()
-        self.macindx = indx
         ##pygatt
         logging.basicConfig()
         logging.getLogger('pygatt').setLevel(logging.DEBUG)
         qty = 0
         while(qty<100):
             try:
-                self.adapter.start()
-                device = self.adapter.connect(self.macs[indx],timeout=2.0)
+                adapter = pygatt.GATTToolBackend()
+                device = adapter.connect(MAC, address_type=pygatt.BLEAddressType.random,timeout=2.0)
                 print('Se conecto!')
                 characteristics = device.discover_characteristics()
                 for i in characteristics.keys():
@@ -27,7 +25,7 @@ def conectarMac(self):
                 print("Not connected")
                 time.sleep(1)
             finally:
-                self.adapter.stop()
+                adapter.stop()
         print("Termino de test de conexión")
 
 conectarMac()
