@@ -9,7 +9,7 @@ def conectarMac():
         logging.basicConfig()
         logging.getLogger('pygatt').setLevel(logging.DEBUG)
         qty = 0
-        while(qty<100):
+        while(qty<1000):
             try:
                 adapter = pygatt.GATTToolBackend()
                 adapter.start()
@@ -22,7 +22,7 @@ def conectarMac():
                 qty = 100
             except pygatt.exceptions.NotConnectedError:
                 qty += 1
-                print("Se han fallado: {qty} intentos" )
+                print("Se han fallado:", qty, "intentos" )
                 print("Not connected")
                 time.sleep(1)
             finally:
