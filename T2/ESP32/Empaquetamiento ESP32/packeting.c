@@ -71,7 +71,6 @@ char* dataprotocol1(char* head){
     uint8_t* MACaddrs = malloc(6);
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    free(MACaddrs);
     head[8] = 0;
     head[9] = 2;
     unsigned short dataLen = dataLength(2);
