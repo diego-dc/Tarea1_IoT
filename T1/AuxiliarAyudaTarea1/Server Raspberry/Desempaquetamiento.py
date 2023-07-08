@@ -1,6 +1,6 @@
 from struct import unpack, pack
 import traceback
-from DatabaseWork import * 
+from DatabaseWork import *
 
 # Documentación struct unpack,pack :https://docs.python.org/3/library/struct.html#
 '''
@@ -28,29 +28,53 @@ def confResponse(protocol, transport_layer):
 # Parsea la info del paquete recibido
 # Retorna null si es null la data.
 # Retorna un diccionario del paquete completo si no.
-def parseData(packet):
+def parseData(packet, attempts=1):
+    print("\n")
+    print("------- COMENZANDO DESEMPAQUETAMIENTO ----------\n")
     header = packet[:12]
     data = packet[12:]
+    print(f"- Header bytes: {header} " )
+    print(f"- Data bytes:  {data}" )
+    print("\n--- Recuperando Header --- ")
     headerD = headerDict(header)
-    dataD = dataDict(headerD["protocol"], data)
-    if dataD is not None and dataD["OK"] is not "0": # si es 0 es un saludo
+    if data:
+        print(f"\n--- Recuperando data - ID_protocol({headerD['protocol']}) --- ")
+        dataD = dataDict(headerD["protocol"], data)
+        if dataD is not None:
+            for key,value in dataD.items():
+                print(f'{key} : {value}')
+    if dataD is not None and dataD["val"] is not 0: # si es 0 es un saludo
+        print("\n---------- Guardando Data -----------\n")
         save_data(headerD, dataD)
+        print("se guarda data")
         save_log(headerD, dataD)
+        print("se guarda logs")
         # esto puede estar mal, ya que, si rellenamos la perdida de paquetes siempre sera el mismo size.
         data_length = headerD["length"]
-        save_loss(headerD, dataD, data_length)
-
-    return None if dataD is None else {**headerD, **dataD}
+        save_loss(headerD, dataD, attempts) # TODO ver lo de los attempts
+        print("se guarda perdida")
+        print("\n------------ Desempaquetamiento Exitoso ------------\n")
+    if dataD is None :
+        print("\n-- ES UN SALUDO --\n")
+        return None
+    else: {**headerD, **dataD}
 
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
     protocol_unpack = ["<B", "<2Bf", "<2BfBfBf", "<2BfBfB2f", "<2BfBfB8f", "<2BfBfB2001f2000f2000f"]
+    print("protocolo unpack :" + protocol_unpack[protocol])
+    print("data to unpack: " + str(data))
     return unpack(protocol_unpack[protocol], data)
 
 def headerDict(data):
     id_device, M1, M2, M3, M4, M5, M6, transport_layer, protocol, leng_msg = unpack("<h8Bh", data)
     # esto porque el MAC va separado por puntos
     MAC = ".".join([hex(x)[2:] for x in [M1, M2, M3, M4, M5, M6]])
+    print("ID_device:" + str(id_device))
+    print("MAC:" + str(MAC))
+    print("protocol:" + str(protocol))
+    print("transport_layer:" + str(transport_layer))
+    print("length:" + str(leng_msg))
     return {"ID_device": id_device, "MAC":MAC, "protocol":protocol, "transport_layer":transport_layer, "length":leng_msg}
 
 def dataDict(protocol:int, data):
@@ -64,12 +88,12 @@ def dataDict(protocol:int, data):
         return p
 
     # el "OK" es un 1 que indica el incio de los datos, se puede utilizar como 0 para señalizar otra cosa
-    p0 = ["OK"] #creo que esto es equivalente(?)
-    p1 = ["OK", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
-    p2 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co"]
-    p3 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS"]
-    p4 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "amp_x", "frec_x", "amp_y", "frec_y", "amp_z", "frec_z"]
-    p5 = ["OK", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "acc_x", "acc_y", "acc_z"]
+    p0 = ["val"] #creo que esto es equivalente(?)
+    p1 = ["val", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
+    p2 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co"]
+    p3 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS"]
+    p4 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "amp_x", "frec_x", "amp_y", "frec_y", "amp_z", "frec_z"]
+    p5 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "acc_x", "acc_y", "acc_z"]
     p = [p0, p1, p2, p3, p4, p5]
 
     try:
