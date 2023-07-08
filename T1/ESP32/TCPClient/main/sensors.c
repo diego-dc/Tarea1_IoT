@@ -38,26 +38,26 @@ float floatrand(float min, float max){
     Devuelve un array con los 200 datos.
 */
 
-float* acc_sensor_acc_x(){
-    float* arr = malloc(2000* sizeof(float));
+int16_t* acc_sensor_acc_x(){
+    int16_t* arr = malloc(2000* sizeof(int16_t));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)2 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (int16_t)2 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
 
-float* acc_sensor_acc_y(){
-    float* arr = malloc(2000* sizeof(float));
+int16_t* acc_sensor_acc_y(){
+    int16_t* arr = malloc(2000* sizeof(int16_t));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)3 * cos(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (int16_t)3 * cos(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
 
-float* acc_sensor_acc_z(){
-    float* arr = malloc(2000* sizeof(float));
+int16_t* acc_sensor_acc_z(){
+    int16_t* arr = malloc(2000* sizeof(int16_t));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)10 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (int16_t)10 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
@@ -78,17 +78,17 @@ char THPC_sensor_temp(){
 }
 
 char THPC_sensor_hum(){
-    float n =(float) floatrand(30, 80);
+    char n =(char) floatrand(30, 80);
     // (float) 30 + (rand() %51);  <-- Esta no genera decimales creo.
     return n;
 }
 
-char THPC_sensor_pres(){
-    float n =(char) 1000 + (rand() %201);
+float THPC_sensor_pres(){
+    float n =floatrand(1000.0, 1200.0);
     return n;
 }
 
-char THPC_sensor_co(){
+float THPC_sensor_co2(){
     float n =(float) floatrand(30, 200);
     return n;
 }
@@ -138,6 +138,6 @@ float acc_kpi_frec_z() {
 }
 
 float acc_kpi_rms() {
-    float RMS = (float) sqrt(powf(acc_kpi_amp_x(), 2) + powf(acc_kpi_amp_y(), 2) + powf(acc_kpi_amp_z(), 2));
+    float RMS = (float) sqrt(pow(acc_kpi_amp_x(), 2) + pow(acc_kpi_amp_y(), 2) + pow(acc_kpi_amp_z(), 2));
     return RMS;
 }
