@@ -30,18 +30,10 @@ float floatrand(float min, float max){
     return min + (float)rand()/(float)(RAND_MAX/(max-min));
 }
 
-/*
-    Funciones que simulan el Acceloremeter_Sensor
-
-    El M_PI revisar si funciona**
-
-    Devuelve un array con los 200 datos.
-*/
-
 float* acc_sensor_acc_x(){
     float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)2 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = floatrand(-16,16);
     }
     return arr;
 }
@@ -49,7 +41,7 @@ float* acc_sensor_acc_x(){
 float* acc_sensor_acc_y(){
     float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)3 * cos(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = floatrand(-16,16);
     }
     return arr;
 }
@@ -57,11 +49,34 @@ float* acc_sensor_acc_y(){
 float* acc_sensor_acc_z(){
     float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (float)10 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = floatrand(-16,16);
     }
     return arr;
 }
 
+float* rgyr_x(){
+    float* arr = malloc(2000* sizeof(float));
+    for (int i =0; i <2000; i++){
+        arr[i] = floatrand(-1000,1000);
+    }
+    return arr;
+}
+
+float* rgyr_y(){
+    float* arr = malloc(2000* sizeof(float));
+    for (int i =0; i <2000; i++){
+        arr[i] = floatrand(-1000,1000);
+    }
+    return arr;
+}
+
+float* rgyr_z(){
+    float* arr = malloc(2000* sizeof(float));
+    for (int i =0; i <2000; i++){
+        arr[i] = floatrand(-1000,1000);
+    }
+    return arr;
+}
 
 /*
     Funciones que simulan el THPC_Sensor
@@ -73,23 +88,22 @@ float* acc_sensor_acc_z(){
 */
 
 char THPC_sensor_temp(){
-    char n =(char) 5 + (rand() %26);
+    char n = (char) 5 + (rand() % 26);
     return n;
 }
 
 char THPC_sensor_hum(){
-    char n =(char) floatrand(30, 80);
-    // (float) 30 + (rand() %51);  <-- Esta no genera decimales creo.
+    char n = (char) 30 + (rand() % 51);
     return n;
 }
 
-float THPC_sensor_pres(){
-    float n =floatrand(1000.0, 1200.0);
+int32_t THPC_sensor_pres(){
+    char n = (char) 1000 + (rand() % 201);
     return n;
 }
 
 float THPC_sensor_co2(){
-    float n =(float) floatrand(30, 200);
+    float n = floatrand(30, 200);
     return n;
 }
 
@@ -98,8 +112,8 @@ float THPC_sensor_co2(){
     nivel de bateria del aparato.
 */
 
-char batt_sensor(){
-    char n =(char) rand() %101;
+uint8_t batt_sensor(){
+    char n = (char) 1 + (rand() %100);
     return n;
 }
 
@@ -108,32 +122,32 @@ char batt_sensor(){
 */
 
 float acc_kpi_amp_x() {
-    float amp_x = (float) floatrand(0.0059, 0.12);
+    float amp_x = floatrand(0.0059, 0.12);
     return amp_x;
 }
 
 float acc_kpi_frec_x() {
-    float frec_x = (float) floatrand(0.0059, 0.12);
+    float frec_x = floatrand(0.0059, 0.12);
     return frec_x;
 }
 
 float acc_kpi_amp_y() {
-    float amp_y = (float) floatrand(29, 31);
+    float amp_y = floatrand(29.0, 31.0);
     return amp_y;
 }
 
 float acc_kpi_frec_y() {
-    float frec_y = (float) floatrand(0.0041, 0.11);
+    float frec_y = floatrand(0.0041, 0.11);
     return frec_y;
 }
 
 float acc_kpi_amp_z() {
-    float amp_z = (float) floatrand(59, 61);
+    float amp_z = floatrand(59.0, 61.0);
     return amp_z;
 }
 
 float acc_kpi_frec_z() {
-    float frec_z = (float) floatrand(89, 91);
+    float frec_z = floatrand(89.0, 91.0);
     return frec_z;
 }
 
