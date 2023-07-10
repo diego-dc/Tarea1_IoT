@@ -3,46 +3,79 @@ import sqlite3 as sql
 
 # Documentación https://docs.python.org/3/library/sqlite3.html
 
+# agregar conn.commit()?
+
 def save_log(header, data):
     with sql.connect("DB.sqlite") as con:
         cur = con.cursor()
         cur.execute(
-            "INSERT INTO Logs (DeviceId, TransportLayer, ProtocolId, Timestamp) VALUES (?, ?, ?, ?)",
-            (header["device_id"], header["transport_layer"], header["protocol_id"], data["timestamp"])
+            "INSERT INTO Logs (DeviceId, MAC, TransportLayer, ProtocolId) VALUES (?, ?, ?, ?)",
+            (header["ID_device"], header["MAC"], header["transport_layer"], header["protocol"])
         )
+        try:
+            con.commit()
 
-def save_loss(header, data, data_length):
+        except Exception as e:
+            print("Error executing SQL query", str(e))
+
+
+def save_loss(header, data, attempts):
     with sql.connect("DB.sqlite") as con:
         cur = con.cursor()
-        latency = datetime.datetime.now() - data["timestamp"]
-        packet_loss = header["length"] - data_length
+        current_timestamp = datetime.datetime.now().timestamp()
+        latency = current_timestamp - data["Timestamp"]
+        # TODO guardar cantidad de attempts.
+        attempts = 1
         cur.execute(
-            "INSERT INTO Loss (Latency, PacketLoss) VALUES (?, ?)",
-            (latency, packet_loss)
+            "INSERT INTO Loss (Latency, Attempts) VALUES (?, ?)",
+            (latency, attempts)
             )
+        con.commit()
 
 def save_data(header, data):
     with sql.connect("DB.sqlite") as con:
-        protocol_0_params = (header["device_id"], header["MAC"], data["val"], data["batt_level"], data["timestamp"])
-        protocol_1_params = protocol_0_params + (data["temp"], data["press"], data["hum"], data["co"])
-        protocol_2_params = protocol_1_params + (data["RMS"],)
-        protocol_3_params = protocol_2_params + (data["amp_x"], data["frec_x"], data["amp_y"], data["frec_y"], data["amp_z"], data["frec_z"])
-        protocol_4_params = protocol_1_params + (data["acc_x"], data["acc_y"], data["acc_z"])
+        protocol = header["protocol"] - 1
 
-        params = [protocol_0_params, protocol_1_params, protocol_2_params, protocol_3_params, protocol_4_params]
+        if data is None:
+            print("Error: Failed to unpack data for protocol", protocol)
+            return
 
-        queries = [
-            "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp) VALUES (?, ?, ?, ?, ?)",
-            "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, RMS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, RMS, AmpX, FrecX, AmpY, FreqY, AmpZ, FreqZ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, AccX, AccY, AccZ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        ]
-        cur = con.cursor()
-        cur.execute(
-            queries[header["protocol"]],
-            params[header["protocol"]]
-        )
+        query = ""
+        params = ()
+
+        if protocol == 0:
+            query = "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp) VALUES (?, ?, ?, ?, ?)"
+            params = (header["ID_device"], header["MAC"], data["val"], data["Batt_level"], data["Timestamp"])
+        elif protocol == 1:
+            query = "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            params = (header["ID_device"], header["MAC"], data["val"], data["Batt_level"], data["Timestamp"],
+                      data["Temp"], data["Pres"], data["Hum"], data["Co"])
+        elif protocol == 2:
+            query = "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, RMS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            params = (header["ID_device"], header["MAC"], data["val"], data["Batt_level"], data["Timestamp"],
+                      data["Temp"], data["Pres"], data["Hum"], data["Co"], data["RMS"])
+        elif protocol == 3:
+            query = "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, RMS, AmpX, FrecX, AmpY, FrecY, AmpZ, FrecZ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            params = (header["ID_device"], header["MAC"], data["val"], data["Batt_level"], data["Timestamp"],
+                      data["Temp"], data["Pres"], data["Hum"], data["Co"], data["RMS"],
+                      data["amp_x"], data["frec_x"], data["amp_y"], data["frec_y"],
+                      data["amp_z"], data["frec_z"])
+        elif protocol == 4:
+            query = "INSERT INTO Data (DeviceId, MAC, Val, BattLevel, Timestamp, Temp, Press, Hum, Co, AccX, AccY, AccZ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            params = (header["ID_device"], header["MAC"], data["val"], data["Batt_level"], data["Timestamp"],
+                      data["Temp"], data["Pres"], data["Hum"], data["Co"],
+                      data["acc_x"], data["acc_y"], data["acc_z"])
+        else:
+            print("Error: Invalid protocol", protocol)
+            return
+
+        try:
+            cur = con.cursor()
+            cur.execute(query, params)
+            con.commit()
+
+        except Exception as e:
+            print("Error executing SQL query", str(e))
 
 def read_conf():
     with sql.connect("DB.sqlite") as con:
@@ -64,3 +97,4 @@ def update_conf(protocol_id, transport_layer):
             ''',
             (protocol_id, transport_layer)
         )
+        cur.commit()

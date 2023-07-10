@@ -78,17 +78,17 @@ char THPC_sensor_temp(){
 }
 
 char THPC_sensor_hum(){
-    float n =(float) floatrand(30, 80);
+    char n =(char) floatrand(30, 80);
     // (float) 30 + (rand() %51);  <-- Esta no genera decimales creo.
     return n;
 }
 
-char THPC_sensor_pres(){
-    float n =(char) 1000 + (rand() %201);
+float THPC_sensor_pres(){
+    float n =floatrand(1000.0, 1200.0);
     return n;
 }
 
-char THPC_sensor_co(){
+float THPC_sensor_co2(){
     float n =(float) floatrand(30, 200);
     return n;
 }
@@ -138,6 +138,6 @@ float acc_kpi_frec_z() {
 }
 
 float acc_kpi_rms() {
-    float RMS = (float) sqrt(powf(acc_kpi_amp_x(), 2) + powf(acc_kpi_amp_y(), 2) + powf(acc_kpi_amp_z(), 2));
+    float RMS = (float) sqrt(pow(acc_kpi_amp_x(), 2) + pow(acc_kpi_amp_y(), 2) + pow(acc_kpi_amp_z(), 2));
     return RMS;
 }
