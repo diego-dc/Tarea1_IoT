@@ -62,7 +62,11 @@ void tcp_client(void)
         ESP_LOGI(TAG, "Successfully connected");
 
         // MENSAJE DE SALUDO
-        char* payload = mensaje(1,0);
+        char* header = malloc(12);
+        char* payload = dataprotocol00(header);
+        // ACÁ NO SÉ SI EN EL PAYLOAD SE MANDA EL HEADER + MESSAGE O SÓLO MESSAGE.
+        // SI SE MANDA SÓLO MESSAGE HABRÍA Q COPIAR AMBOS ARRAYS EN UNO SOLO Y
+        // ESO PASARLO COMO PAYLOAD EN EL SEND DE LA LÍNEA 71
         ESP_LOGI(TAG, "largo del mensaje: %d", strlen(payload));
         err = send(sock, payload, strlen(payload), 0); // mando mensaje de saludo por TCP
         if (err < 0) {
