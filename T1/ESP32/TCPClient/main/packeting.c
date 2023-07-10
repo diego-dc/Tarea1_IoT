@@ -1,6 +1,8 @@
 #include <sensors.c>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/time.h>
 #include "esp_system.h"
 #include "esp_mac.h"
@@ -243,7 +245,7 @@ char* dataprotocol4(char* head){
 	char hum = THPC_sensor_hum();
     msg[11] = hum;
 
-	float co = THPC_sensor_co();
+	float co = THPC_sensor_co2();
     memcpy((void*) &(msg[12]), (void*) &co, 4); //4 bytes
 
 	float* acc_x = acc_sensor_acc_x();

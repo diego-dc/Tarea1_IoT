@@ -38,26 +38,26 @@ float floatrand(float min, float max){
     Devuelve un array con los 200 datos.
 */
 
-int16_t* acc_sensor_acc_x(){
-    int16_t* arr = malloc(2000* sizeof(int16_t));
+float* acc_sensor_acc_x(){
+    float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (int16_t)2 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (float)2 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
 
-int16_t* acc_sensor_acc_y(){
-    int16_t* arr = malloc(2000* sizeof(int16_t));
+float* acc_sensor_acc_y(){
+    float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (int16_t)3 * cos(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (float)3 * cos(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
 
-int16_t* acc_sensor_acc_z(){
-    int16_t* arr = malloc(2000* sizeof(int16_t));
+float* acc_sensor_acc_z(){
+    float* arr = malloc(2000* sizeof(float));
     for (int i =0; i <2000; i++){
-        arr[i] = (int16_t)10 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
+        arr[i] = (float)10 * sin(2 * M_PI * 0.001 * floatrand(-8000, 8000));
     }
     return arr;
 }
