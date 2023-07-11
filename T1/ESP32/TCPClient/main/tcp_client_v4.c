@@ -62,20 +62,24 @@ void tcp_client(void)
         ESP_LOGI(TAG, "Successfully connected");
 
         // MENSAJE DE SALUDO
-        char* header = malloc(12);
-        char* message = dataprotocol00(header);
 
-        char* payload = malloc(messageLength(0));
-        memcpy((void*)&(payload[0]), (void*)header, 12);
-        memcpy((void*)&(payload[12]), (void*)message, dataLength(0));
+        char* headers[6] = {malloc(12), malloc(12), malloc(12), malloc(12), malloc(12), malloc(12)};
+        char* messages[6] = {dataprotocol00(headers[0]), dataprotocol0(headers[1]), dataprotocol1(headers[2]), dataprotocol2(headers[3]),dataprotocol3(headers[4]), dataprotocol4(headers[5])};
 
-        free(header);
-        free(message);
-        // ACÁ NO SÉ SI EN EL PAYLOAD SE MANDA EL HEADER + MESSAGE O SÓLO MESSAGE.
-        // SI SE MANDA SÓLO MESSAGE HABRÍA Q COPIAR AMBOS ARRAYS EN UNO SOLO Y
-        // ESO PASARLO COMO PAYLOAD EN EL SEND DE LA LÍNEA 71
-        ESP_LOGI(TAG, "largo del mensaje: %d", messageLength(0));
-        err = send(sock, payload, messageLength(0), 0); // mando mensaje de saludo por TCP
+        for (int i=0; i<6; i++) {
+            char* payload = malloc(messageLength(i));
+            memcpy((void*)&(payload[0]), (void*)headers[i], 12);
+            memcpy((void*)&(payload[12]), (void*)messages[i], dataLength(i));
+            free(headers[i]);
+            free(messages[i]);
+
+            ESP_LOGI(TAG, "largo del mensaje: %d", messageLength(i));
+            err = send(sock, payload, messageLength(i), 0); // mando mensaje de saludo por TCP
+
+            free(payload);
+        }
+
+
         if (err < 0) {
             ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
             break;
