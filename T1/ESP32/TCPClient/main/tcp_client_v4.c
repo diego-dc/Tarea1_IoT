@@ -77,28 +77,26 @@ void tcp_client(void)
             err = send(sock, payload, messageLength(i), 0); // mando mensaje de saludo por TCP
 
             free(payload);
+
+            if (err < 0) {
+                ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+                break;
+            }
+
+            int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+            // Error occurred during receiving
+            if (len < 0) {
+                ESP_LOGE(TAG, "recv failed: errno %d", errno);
+                break;
+            }
+            // Data received
+            else {
+                rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+                ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
+                ESP_LOGI(TAG, "%s", rx_buffer);
+            }
+
         }
-
-
-        if (err < 0) {
-            ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-            break;
-        }
-
-        int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
-        // Error occurred during receiving
-        if (len < 0) {
-            ESP_LOGE(TAG, "recv failed: errno %d", errno);
-            break;
-        }
-        // Data received
-        else {
-            rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-            ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
-            ESP_LOGI(TAG, "%s", rx_buffer);
-        }
-
-
 
         if (sock != -1) {
             ESP_LOGE(TAG, "Shutting down socket and restarting...");
