@@ -67,7 +67,7 @@ void tcp_client(void)
 
         char* payload = malloc(messageLength(3));
         memcpy((void*)&(payload[0]), (void*)header, 12);
-        memcpy((void*)&(payload[12], (void*)message, dataLength(3)));
+        memcpy((void*)&(payload[12]), (void*)message, dataLength(3));
 
         free(header);
         free(message);
