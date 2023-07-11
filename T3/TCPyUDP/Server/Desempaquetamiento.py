@@ -54,9 +54,11 @@ def parseData(packet, attempts=1):
         save_loss(headerD, dataD, attempts) # TODO ver lo de los attempts
         print("se guarda perdida")
         print("\n------------ Desempaquetamiento Exitoso ------------\n")
+        return (headerD,dataD)
     if dataD is None :
         print("\n-- ES UN SALUDO --\n")
-        return None
+        # quizas está malo el paquete
+        return (None,None)
     else: {**headerD, **dataD}
 
 def protUnpack(protocol:int, data):

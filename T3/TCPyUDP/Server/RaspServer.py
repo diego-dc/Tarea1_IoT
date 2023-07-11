@@ -49,7 +49,6 @@ def conf_UDP():
 # --------------- Funcionamiento PARA TCP ---------------
 
 def TCP_connection():
-    global protocol
     s = conf_TCP()
     while True:
         conn, addr = s.accept()
@@ -102,7 +101,7 @@ def TCP_connection():
             #print(f"Enviando {res}")
             #conn.send(dsmpq.response(True, 0, 1))
             break
-        
+
         conn.close()
         print('Conexión cerrada')
         break
@@ -110,34 +109,34 @@ def TCP_connection():
 # --------------- Funcionamiento PARA UDP ---------------
 
 def UDP_connection():
+    s = conf_UDP()
     while True:
+        doc = b""
         while True:
-            sUDP = conf_UDP()
-            if protocol != "4":
-                data, client_address = sUDP.recvfrom(1)
-                dataD = dsmpq.parseData(data)
+            data,client_address = s.recvfrom(1024)
 
-            else:
-                data = jf.UDP_frag_recv(sUDP)
-                dataD = dsmpq.parseData(data)
+            if data == b'\0':
+                    print("Llego toda la información")
+                    break
+            else: 
+                doc += data
 
-            print(f"Recibido {data}")
-
-            # leemos la tabla de config
-            res = dbw.read_conf()
-
-            # revisar protocolo y tipo de conexion a usar.
-            protocolo = res[0]
-            if res[1] == "0" :
-                transport_layer = True
-
-            if res[1] == "1" :
-                transport_layer = False
+            if doc == '\0':
+                print("Llego data vacía, termina la conexión")
                 break
 
+            print("Desempaquetando data...")
+            try:
+            
+                dataD = dsmpq.parseData(doc)
+            except Exception as e:
+                    print("Excepción en parseo/guardado UDP :")
+                    print(e)
+                    break 
 
 
-# ------------------------- SERVER ---------------------------------
+
+# ------------------------- MAIN SERVER ---------------------------------
 
 s = initial_conf()
 
