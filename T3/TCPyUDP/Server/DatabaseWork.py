@@ -83,8 +83,7 @@ def read_conf():
         res = cur.execute(
             "SELECT * FROM Conf WHERE rowid = 1"
         )
-        
-        print(res.fetchone())
+
         return res.fetchone()[0]
 
 def update_conf(protocol_id, transport_layer):
