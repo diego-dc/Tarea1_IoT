@@ -1,3 +1,4 @@
+
 #include <sensors.c>
 #include <math.h>
 #include <stdlib.h>
@@ -8,7 +9,7 @@
 #include "esp_mac.h"
 #include "esp_log.h"
 
-unsigned short lengmsg[6] = {2, 6, 16, 20, 44};
+unsigned short lengmsg[6] = {1, 6, 16, 20, 44};
 
 unsigned short dataLength(char protocol){
     return lengmsg[(unsigned int)protocol] - 1;

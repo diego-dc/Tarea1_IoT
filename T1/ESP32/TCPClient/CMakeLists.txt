@@ -2,7 +2,7 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
-if(${IDF_TARGET} STREQUAL "linux")
+if("${IDF_TARGET}" STREQUAL "linux")
     list(APPEND EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/tools/mocks/freertos/")
     set(COMPONENTS main)
     include($ENV{IDF_PATH}/tools/cmake/project.cmake)

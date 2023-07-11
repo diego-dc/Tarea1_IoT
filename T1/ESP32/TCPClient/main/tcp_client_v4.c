@@ -63,19 +63,19 @@ void tcp_client(void)
 
         // MENSAJE DE SALUDO
         char* header = malloc(12);
-        char* message = dataprotocol2(header);
+        char* message = dataprotocol00(header);
 
-        char* payload = malloc(messageLength(3));
+        char* payload = malloc(messageLength(0));
         memcpy((void*)&(payload[0]), (void*)header, 12);
-        memcpy((void*)&(payload[12]), (void*)message, dataLength(3));
+        memcpy((void*)&(payload[12]), (void*)message, dataLength(0));
 
         free(header);
         free(message);
         // ACÁ NO SÉ SI EN EL PAYLOAD SE MANDA EL HEADER + MESSAGE O SÓLO MESSAGE.
         // SI SE MANDA SÓLO MESSAGE HABRÍA Q COPIAR AMBOS ARRAYS EN UNO SOLO Y
         // ESO PASARLO COMO PAYLOAD EN EL SEND DE LA LÍNEA 71
-        ESP_LOGI(TAG, "largo del mensaje: %d", messageLength(3));
-        err = send(sock, payload, messageLength(3), 0); // mando mensaje de saludo por TCP
+        ESP_LOGI(TAG, "largo del mensaje: %d", messageLength(0));
+        err = send(sock, payload, messageLength(0), 0); // mando mensaje de saludo por TCP
         if (err < 0) {
             ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
             break;
