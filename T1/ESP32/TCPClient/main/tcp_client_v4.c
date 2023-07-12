@@ -90,8 +90,14 @@ void tcp_client(void)
                 break;
             }
             // Data received
+            else if len[0] != 1 {
+
+                ESP_LOGE(TAG, "recv failed: OK value is not 1");
+                break;
+            }
             else {
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+
                 ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
                 ESP_LOGI(TAG, "%s", rx_buffer);
             }
