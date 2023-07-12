@@ -193,8 +193,8 @@ void tcp_config_socket(void) {
 
     shutdown(sock, 0);
     close(sock);
-
-    if (transport_layer == 0) {
+    ESP_LOGI(TAG, "Transport layer: %d", transport_layer);
+    if (transport_layer == '0') {
         tcp_client(protocol);
     }
     else {
