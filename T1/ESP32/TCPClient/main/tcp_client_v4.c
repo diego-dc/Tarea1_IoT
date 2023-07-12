@@ -194,7 +194,7 @@ void tcp_config_socket(void) {
     shutdown(sock, 0);
     close(sock);
 
-    if (transport_layer == '0') {
+    if (transport_layer == 0) {
         tcp_client(protocol);
     }
     else {
