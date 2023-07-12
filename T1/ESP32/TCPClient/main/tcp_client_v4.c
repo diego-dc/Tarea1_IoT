@@ -193,6 +193,7 @@ void tcp_config_socket(void) {
 
     shutdown(sock, 0);
     close(sock);
+    ESP_LOGI(TAG, "Protocol: %d", protocol);
     ESP_LOGI(TAG, "Transport layer: %d", transport_layer);
     if (transport_layer == '0') {
         ESP_LOGI(TAG, "llamando TCP client");
