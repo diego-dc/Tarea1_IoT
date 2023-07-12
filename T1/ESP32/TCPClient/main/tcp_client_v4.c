@@ -90,7 +90,7 @@ void tcp_client(void)
                 break;
             }
             // Data received
-            else if len[0] != 1 {
+            else if (rx_buffer[0] != 1) {
 
                 ESP_LOGE(TAG, "recv failed: OK value is not 1");
                 break;
