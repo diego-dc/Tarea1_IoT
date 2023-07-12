@@ -146,6 +146,7 @@ def read_conf():
             print(e)
             return
 
+        return res.fetchone()
 
 def update_conf(protocol_id, transport_layer):
     with sql.connect("DB.sqlite") as con:

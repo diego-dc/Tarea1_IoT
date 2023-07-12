@@ -9,7 +9,7 @@
 #include "esp_event.h"
 
 
-extern void tcp_client(void);
+extern void tcp_config_socket(void);
 void app_main(void)
 {
     ESP_ERROR_CHECK(nvs_flash_init());
@@ -22,5 +22,5 @@ void app_main(void)
      */
     ESP_ERROR_CHECK(example_connect());
 
-    tcp_client();
+    tcp_config_socket();
 }
