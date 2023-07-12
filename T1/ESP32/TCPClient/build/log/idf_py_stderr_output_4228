@@ -1,0 +1,8 @@
+CMake Error at CMakeLists.txt:5 (if):
+  if given arguments:
+
+    "STREQUAL" "linux"
+
+  Unknown arguments specified
+
+
