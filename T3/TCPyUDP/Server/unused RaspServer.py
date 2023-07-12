@@ -1,15 +1,14 @@
 import socket
 import Desempaquetamiento as dsmpq
 import DatabaseWork as dbw
-import time
 
 
 # --------------- CONFIGURACION PARA TCP ---------------
 
 def initial_conf():
     # "192.168.5.177"  # Standard loopback interface address (localhost)
-    HOST = "192.168.100.155"# "localhost"
-    PORT = 3000  # Port to listen on (non-privileged ports are > 1023)
+    HOST = "192.168.4.1"# "localhost"
+    PORT = 10003  # Port to listen on (non-privileged ports are > 1023)
 
     s = socket.socket(socket.AF_INET, #internet
                     socket.SOCK_STREAM) #TCP
@@ -23,8 +22,8 @@ def initial_conf():
 
 def conf_TCP():
     # "192.168.5.177"  # Standard loopback interface address (localhost)
-    HOST = "192.168.100.155"#"localhost"
-    PORT = 3002  # Port to listen on (non-privileged ports are > 1023)
+    HOST = "192.168.245.177"#"localhost"
+    PORT = 5000  # Port to listen on (non-privileged ports are > 1023)
 
     s = socket.socket(socket.AF_INET, #internet
                     socket.SOCK_STREAM) #TCP
@@ -36,8 +35,8 @@ def conf_TCP():
 # --------------- CONFIGURACION PARA UDP ---------------
 
 def conf_UDP():
-    UDP_IP = "192.168.100.155"# "localhost"
-    UDP_PORT = 3004
+    UDP_IP = "192.168.5.177"# "localhost"
+    UDP_PORT = 5010
 
     sUDP = socket.socket(socket.AF_INET, # Internet
                         socket.SOCK_DGRAM) # UDP
@@ -63,7 +62,6 @@ def TCP_connection():
                         data = conn.recv(1024)
                         # si llegan datos completos, tenemos que trabajarlos.
                         if b'\0' in data:
-                            doc += data
                             print("Llegó toda la informacion:")
                             print(data)
                             break
@@ -117,13 +115,12 @@ def UDP_connection():
             data,client_address = s.recvfrom(1024)
 
             if data == b'\0':
-                    doc += data
                     print("Llego toda la información")
                     break
             else:
                 doc += data
 
-            if doc == b'':
+            if doc == '\0':
                 print("Llego data vacía, termina la conexión")
                 break
 
@@ -155,9 +152,6 @@ while True:
         # se maneja la configuracion inicial.
         (protocol,transport_layer) = dbw.read_conf()
         conf = ((str(protocol)+str(transport_layer)).encode())
-
-        #esperamos un poco
-        #time.sleep(2)
         # se envia
         conn.send(conf)
         print("Configuración enviada desade Main Server :)")
