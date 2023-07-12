@@ -7,31 +7,38 @@ import mysql.connector
 # agregar conn.commit()?
 
 def save_log(header, data):
-    with sql.connect("DB.sqlite") as con:
-        cur = con.cursor()
-        cur.execute(
-            "INSERT INTO Logs (DeviceId, MAC, TransportLayer, ProtocolId) VALUES (?, ?, ?, ?)",
-            (header["ID_device"], header["MAC"], header["transport_layer"], header["protocol"])
-        )
+    with mysql.connector.connect(
+        host="localhost",
+        user="user-iot",
+        password="iot1psw",
+        database="IoT_tarea3"
+    ) as con:
         try:
+            
+            # tomamos el status
+            cur = con.cursor()
+            cur.execute(f"SELECT Status_conf FROM Configuration WHERE Id_device={header['ID_device']}")
+            status=cur.fetchone()[0]
+            
+            query = "INSERT INTO Log ( Status_report, Protocol_report, Battery_Level, Conf_peripheral, configuration_Id_device )  VALUES(?, ?, ?, ?, ?);"
+            params = (status, header["protocol"], data["Batt"], None, header["ID_Dev"])
+            cur.execute(query, params)
+            
+            # recuperamos el id del log
+            id_log=cur.lastrowid
+
             con.commit()
+            cur.close()
+
 
         except Exception as e:
             print("Error executing SQL query", str(e))
+        finally:
+         if con:
+             con.close()
+             
+    return id_log
 
-
-def save_loss(header, data, attempts):
-    with sql.connect("DB.sqlite") as con:
-        cur = con.cursor()
-        current_timestamp = datetime.datetime.now().timestamp()
-        latency = current_timestamp - data["Timestamp"]
-        # TODO guardar cantidad de attempts.
-        attempts = 1
-        cur.execute(
-            "INSERT INTO Loss (Latency, Attempts) VALUES (?, ?)",
-            (latency, attempts)
-            )
-        con.commit()
 
 def save_data(header, data, id_device):
     # revisar si esto funciona
@@ -48,8 +55,6 @@ def save_data(header, data, id_device):
             print("Error: Failed to unpack data for protocol", protocol)
             return
 
-        query = ""
-        params = ()
 
         if protocol == 0:
             queries = "INSERT INTO Data_1 (Log_Id_device) VALUES(?)"

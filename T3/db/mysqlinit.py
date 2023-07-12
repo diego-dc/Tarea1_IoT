@@ -57,7 +57,10 @@ create_data_1_table = '''CREATE TABLE Data_1 (
     Amp_z FLOAT,
     Freq_z FLOAT,
     Time_client DATETIME,
-    PRIMARY KEY (Id_device)
+    Log_Id_device INTEGER NOT NULL,
+    PRIMARY KEY (Id_device),
+    FOREIGN KEY (Log_Id_device) REFERENCES Log (Id_device)
+    
 );'''
 
 create_data_2_table = '''CREATE TABLE Data_2 (
@@ -69,7 +72,9 @@ create_data_2_table = '''CREATE TABLE Data_2 (
     Rgyr_y FLOAT,
     Rgyr_z FLOAT,
     Time_client DATETIME,
-    PRIMARY KEY (Id_device)
+    Log_Id_device INTEGER NOT NULL,
+    PRIMARY KEY (Id_device),
+    FOREIGN KEY (Log_Id_device) REFERENCES Log (Id_device)
 );'''
 
 
