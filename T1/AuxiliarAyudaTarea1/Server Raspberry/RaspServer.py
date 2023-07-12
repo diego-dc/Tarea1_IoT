@@ -157,7 +157,7 @@ while True:
         conf = ((str(protocol)+str(transport_layer)).encode())
 
         #esperamos un poco
-        time.sleep(2)
+        #time.sleep(2)
         # se envia
         conn.send(conf)
         print("Configuración enviada desade Main Server :)")
