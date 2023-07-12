@@ -62,6 +62,7 @@ def TCP_connection():
                         data = conn.recv(1024)
                         # si llegan datos completos, tenemos que trabajarlos.
                         if b'\0' in data:
+                            doc += data
                             print("Llegó toda la informacion:")
                             print(data)
                             break
@@ -115,12 +116,13 @@ def UDP_connection():
             data,client_address = s.recvfrom(1024)
 
             if data == b'\0':
+                    doc += data
                     print("Llego toda la información")
                     break
             else:
                 doc += data
 
-            if doc == '\0':
+            if doc == b'':
                 print("Llego data vacía, termina la conexión")
                 break
 
