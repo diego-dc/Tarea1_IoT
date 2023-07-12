@@ -30,7 +30,6 @@ create_conf_table = '''CREATE TABLE Configuration (
     PRIMARY KEY (Id_device)
 );'''
 
-
 create_logs_table = '''CREATE TABLE Log (
     Id_device INTEGER,
     Status_report INTEGER NOT NULL,
@@ -43,8 +42,6 @@ create_logs_table = '''CREATE TABLE Log (
     PRIMARY KEY (Id_device),
     FOREIGN KEY (Configuration_Id_device) REFERENCES Configuration (Id_device)
 );'''
-
-
 
 create_data_1_table = '''CREATE TABLE Data_1 (
     Id_device INTEGER,
