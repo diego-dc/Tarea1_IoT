@@ -44,19 +44,19 @@ void tcp_client(char protocol) {
         struct sockaddr_in dest_addr;
         inet_pton(AF_INET, host_ip, &dest_addr.sin_addr);
         dest_addr.sin_family = AF_INET;
-        dest_addr.sin_port = htons(PORT + 1);
+        dest_addr.sin_port = htons(PORT + 2);
         addr_family = AF_INET;
         ip_protocol = IPPROTO_IP;
 #elif defined(CONFIG_EXAMPLE_SOCKET_IP_INPUT_STDIN)
         struct sockaddr_storage dest_addr = { 0 };
-        ESP_ERROR_CHECK(get_addr_from_stdin(PORT + 1, SOCK_STREAM, &ip_protocol, &addr_family, &dest_addr));
+        ESP_ERROR_CHECK(get_addr_from_stdin(PORT + 2, SOCK_STREAM, &ip_protocol, &addr_family, &dest_addr));
 #endif
         int sock =  socket(addr_family, SOCK_STREAM, ip_protocol);
         if (sock < 0) {
             ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
             break;
         }
-        ESP_LOGI(TAG, "Socket created, connecting to %s:%d", host_ip, PORT + 1);
+        ESP_LOGI(TAG, "Socket created, connecting to %s:%d", host_ip, PORT + 2);
 
         int err = connect(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
         if (err != 0) {
@@ -186,7 +186,6 @@ void tcp_config_socket(void) {
         return;
     }
     ESP_LOGI(TAG, "Configuración recibida");
-
     rx_buffer[len] = 0;
     char protocol =  rx_buffer[0];
     char transport_layer = rx_buffer[1];
@@ -197,6 +196,8 @@ void tcp_config_socket(void) {
     ESP_LOGI(TAG, "Transport layer: %d", transport_layer);
     if (transport_layer == '0') {
         ESP_LOGI(TAG, "llamando TCP client");
+
+    if (transport_layer == 0) {
         tcp_client(protocol);
     }
     else {
