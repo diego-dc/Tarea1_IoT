@@ -8,3 +8,5 @@ def save_conf():
             (2, 0)
             )
         con.commit()
+
+save_conf()
