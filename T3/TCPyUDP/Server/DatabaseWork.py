@@ -84,7 +84,7 @@ def read_conf():
             "SELECT * FROM Conf WHERE rowid = 1"
         )
 
-        return res.fetchone()[0]
+        return res.fetchone()
 
 def update_conf(protocol_id, transport_layer):
     with sql.connect("DB.sqlite") as con:

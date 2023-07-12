@@ -1,17 +1,24 @@
 import socket
 import Desempaquetamiento as dsmpq
-import juntarFragm as jf
 import DatabaseWork as dbw
 
-# los tipos de protocolo, dejar acá el actual.
-protocol = "-1"
-
-# el tipo de conexión que se realizará.
-# true -> TCP
-# false -> UDP
-transport_layer = True
 
 # --------------- CONFIGURACION PARA TCP ---------------
+
+def initial_conf():
+    # "192.168.5.177"  # Standard loopback interface address (localhost)
+    HOST = "192.168.4.1"# "localhost"
+    PORT = 10003  # Port to listen on (non-privileged ports are > 1023)
+
+    s = socket.socket(socket.AF_INET, #internet
+                    socket.SOCK_STREAM) #TCP
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((HOST, PORT))
+    s.listen(50)
+    print(f"Listening on {HOST}:{PORT} en Main Server")
+
+    return s
+
 
 def conf_TCP():
     # "192.168.5.177"  # Standard loopback interface address (localhost)
@@ -41,98 +48,123 @@ def conf_UDP():
 # --------------- Funcionamiento PARA TCP ---------------
 
 def TCP_connection():
-    global protocol
     s = conf_TCP()
-    conn, addr = s.accept()
-    print(f'Conectado por alguien ({addr[0]}) desde el puerto {addr[1]}')
     while True:
-        try:
-            # vemos que protocolo debería llegar.
-            if protocol != "4":
-                data = conn.recv(1024)
-                # si llegan datos completos, tenemos que trabajarlos.
-                if b'\0' in data:
-                    print(data)
-                    # los guardamos en un dict el contenido del socket - si los datos son null sera un None-.
-                    # esto los guarda en la base de datos también.
-                    dataD = dsmpq.parseData(data)
+        conn, addr = s.accept()
+        print(f'Conectado por alguien ({addr[0]}) desde el puerto {addr[1]}')
+        while True:
+            try:
+                print("Listo para recibir data...")
+                doc = b""
+                while True:
+                    try:
 
-                    # Este sería el caso de un saludo.
-                    if (dataD["OK"] == 0):
-                        print('es un saludo')
-                        print(f"Recibido {data}") 
-                        # extraemos de la db la conf a utilizar. 
-                        res = dbw.read_conf()
-                        print(f"Enviando {res}")
-                        res = dsmpq.confResponse(res[0], res[1]) # revisar si esta tomando bien los datos.
-                        # enviamos la conf al cliente.
-                        conn.send(res.encode())
-                        break
+                        data = conn.recv(1024)
+                        # si llegan datos completos, tenemos que trabajarlos.
+                        if b'\0' in data:
+                            print("Llegó toda la informacion:")
+                            print(data)
+                            break
+                        else:
+                            # si no ha llegado todo el msj tenemos que juntarlo
+                            doc += data
 
-            else:
-                data = jf.TCP_frag_recv(conn)
-                dataD = dsmpq.parseData(data)
 
-        except ConnectionResetError:
+                    # manejo de excepciones
+                    except TimeoutError:
+                        conn.send(b'\0')
+                        raise
+                    except Exception:
+                        conn.send(b'\0')
+                        raise
+
+                    conn.send(dsmpq.response(False, 0, 1))
+
+            except ConnectionResetError:
+                break
+
+            print("Desempaquetando data...")
+            try:
+
+                # los guardamos en un dict el contenido del socket - si los datos son null sera un None-.
+                # esto los guarda en la base de datos también.
+                dataD = dsmpq.parseData(doc)
+                # mandamos respuesta?
+                conn.send(dsmpq.response(False, 0, 1))
+            except Exception as e:
+                print("Excepción:")
+                print(e)
+                print(str(e))
+                break
+
+            #print(f"Enviando {res}")
+            #conn.send(dsmpq.response(True, 0, 1))
             break
-        print(f"Recibido afuera {data}")
-        res = dbw.read_conf()
-        print(f"Enviando {res}")
-        conn.send(dsmpq.response(True, 0, 1))
 
-        # revisar protocolo y tipo de conexion a usar.
-        protocol = res[0]
-        if res[1] == "0" :
-            transport_layer = True
-
-        if res[1] == "1" :
-            transport_layer = False
-            break
-
-    conn.close()
-    print('Desconectado')
+        conn.close()
+        print('Conexión cerrada')
+        break
 
 # --------------- Funcionamiento PARA UDP ---------------
 
 def UDP_connection():
+    s = conf_UDP()
     while True:
+        doc = b""
         while True:
-            sUDP = conf_UDP()
-            if protocol != "4":
-                data, client_address = sUDP.recvfrom(1)
-                dataD = dsmpq.parseData(data)
+            data,client_address = s.recvfrom(1024)
 
+            if data == b'\0':
+                    print("Llego toda la información")
+                    break
             else:
-                data = jf.UDP_frag_recv(sUDP)
-                dataD = dsmpq.parseData(data)
+                doc += data
 
-            print(f"Recibido {data}")
-
-            # leemos la tabla de config
-            res = dbw.read_conf()
-
-            # revisar protocolo y tipo de conexion a usar.
-            protocolo = res[0]
-            if res[1] == "0" :
-                transport_layer = True
-
-            if res[1] == "1" :
-                transport_layer = False
+            if doc == '\0':
+                print("Llego data vacía, termina la conexión")
                 break
 
+            print("Desempaquetando data...")
+            try:
+
+                dataD = dsmpq.parseData(doc)
+            except Exception as e:
+                    print("Excepción en parseo/guardado UDP :")
+                    print(e)
+                    break
 
 
+
+# ------------------------- MAIN SERVER ---------------------------------
+
+s = initial_conf()
 
 while True:
+    print("Aceptando conexion en Main server...")
+    conn, addr = s.accept()
+
+
     # Elegir la configuración
-    print("Configurando socket según corresponda")
+    print("Esperando configuración socket en Main Server...")
+    initial_data = conn.recv(1024)
 
-    if transport_layer:
-        TCP_connection()
+    if initial_data == b'\0':
+        # se maneja la configuracion inicial.
+        (protocol,transport_layer) = dbw.read_conf()
+        conf = ((str(protocol)+str(transport_layer)).encode())
+        # se envia
+        conn.send(conf)
+        print("Configuración enviada desade Main Server :)")
+        conn.close()
+        if transport_layer == 0:
+            print("Ejecutando server TCP desde Main")
+            TCP_connection()
 
-    elif not transport_layer:
-        UDP_connection()
+        else:
+            print("Ejecutando server UDP desde Main")
+            UDP_connection()
 
-    # presionar una tecla para terminar el programa(?)
-    # no se si con la Raspberry funcionara
-    # quizas que cambie una variable y aqui terminar el programa. y checkear en los otrs whiles.
+    else:
+        print("No se recibió soliciticud de configuración inical desde Main Server.")
+        conn.close()
+        print('Conexión cerrada de Main server')

@@ -1,6 +1,5 @@
 import socket
 import Desempaquetamiento as dsmpq
-import juntarFragm as jf
 import DatabaseWork as dbw
 
 
