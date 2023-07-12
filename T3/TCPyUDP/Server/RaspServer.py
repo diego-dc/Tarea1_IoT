@@ -57,7 +57,7 @@ def TCP_connection():
             try:
                 print("Listo para recibir data...")
                 doc = b""
-                while True: 
+                while True:
                     try:
 
                         data = conn.recv(1024)
@@ -66,12 +66,12 @@ def TCP_connection():
                             print("Llegó toda la informacion:")
                             print(data)
                             break
-                        else: 
+                        else:
                             # si no ha llegado todo el msj tenemos que juntarlo
                             doc += data
-                            
 
-                    # manejo de excepciones        
+
+                    # manejo de excepciones
                     except TimeoutError:
                         conn.send(b'\0')
                         raise
@@ -79,11 +79,11 @@ def TCP_connection():
                         conn.send(b'\0')
                         raise
 
-                    conn.send(b'\1')
+                    conn.send(dsmpq.response(False, 0, 1))
 
             except ConnectionResetError:
                 break
-            
+
             print("Desempaquetando data...")
             try:
 
@@ -91,12 +91,12 @@ def TCP_connection():
                 # esto los guarda en la base de datos también.
                 dataD = dsmpq.parseData(doc)
                 # mandamos respuesta?
-                conn.send(b'\1')
+                conn.send(dsmpq.response(False, 0, 1))
             except Exception as e:
                 print("Excepción:")
                 print(e)
                 print(str(e))
-                break 
+                break
 
             #print(f"Enviando {res}")
             #conn.send(dsmpq.response(True, 0, 1))
@@ -118,7 +118,7 @@ def UDP_connection():
             if data == b'\0':
                     print("Llego toda la información")
                     break
-            else: 
+            else:
                 doc += data
 
             if doc == '\0':
@@ -127,12 +127,12 @@ def UDP_connection():
 
             print("Desempaquetando data...")
             try:
-            
+
                 dataD = dsmpq.parseData(doc)
             except Exception as e:
                     print("Excepción en parseo/guardado UDP :")
                     print(e)
-                    break 
+                    break
 
 
 
@@ -150,7 +150,7 @@ while True:
     initial_data = conn.recv(1024)
 
     if initial_data == b'\0':
-        # se maneja la configuracion inicial. 
+        # se maneja la configuracion inicial.
         (protocol,transport_layer) = dbw.read_conf()
         conf = ((str(protocol)+str(transport_layer)).encode())
         # se envia
