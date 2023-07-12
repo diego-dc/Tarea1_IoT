@@ -21,7 +21,7 @@ def save_log(header, data):
             status=cur.fetchone()[0]
             
             query = "INSERT INTO Log ( Status_report, Protocol_report, Battery_Level, Conf_peripheral, configuration_Id_device )  VALUES(?, ?, ?, ?, ?);"
-            params = (status, header["protocol"], data["Batt"], None, header["ID_Dev"])
+            params = (status, header["protocol"], data["Batt_level"], None, header["ID_Dev"])
             cur.execute(query, params)
             
             # recuperamos el id del log
@@ -36,7 +36,7 @@ def save_log(header, data):
         finally:
          if con:
              con.close()
-             
+
     return id_log
 
 

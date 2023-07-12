@@ -63,15 +63,20 @@ def parseData(packet, attempts=1):
 
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
-    protocol_unpack = ["<B", "<2Bf", "<2BfBfBf", "<2BfBfB2f", "<2BfBfB8f", "<2BfBfB2001f2000f2000f"]
+    # ver si estan bien o probar estos  "<BBl", "<BBlBfBf", "<BBlBfBff","<BBlBfBff6f"
+    protocol_unpack = ["<2Bf", "<2BfBfBf", "<2BfBfB2f", "<2BfBfB8f", "<BBlBfBf2000f2000f2000f2000f2000f2000f"]
     print("protocolo unpack :" + protocol_unpack[protocol])
     print("data to unpack: " + str(data))
     return unpack(protocol_unpack[protocol], data)
 
 def headerDict(data):
-    id_device, M1, M2, M3, M4, M5, M6, transport_layer, protocol, leng_msg = unpack("<h8Bh", data)
+    id_device, M1, M2, M3, M4, M5, M6, transport_layer, protocol, leng_msg = unpack("<2s6BBBH", data)
+    # ver si es necesario
+    #ID_Dev = int(ID_Dev.decode('ascii')[1])
     # esto porque el MAC va separado por puntos
     MAC = ".".join([hex(x)[2:] for x in [M1, M2, M3, M4, M5, M6]])
+    protocol=int(chr(protocol))
+    transport_layer=int(chr(transport_layer))
     print("ID_device:" + str(id_device))
     print("MAC:" + str(MAC))
     print("protocol:" + str(protocol))
@@ -86,17 +91,47 @@ def dataDict(protocol:int, data):
     def protFunc(protocol, keys):
         def p(data):
             unp = protUnpack(protocol, data)
+
+            if (protocol==4):
+                
+                unp=list(unp)
+                lista_floatsACCx=unp[7:2007]
+                lista_floatsACCy=unp[2007:4007]
+                lista_floatsACCz=unp[4007:6007]
+
+                lista_floatsRgrx=unp[6007:8007]
+                lista_floatsRgry=unp[10007:120007]
+                lista_floatsRgrz=unp[4007:6007]
+        
+                stringfloatAccx="["+";".join(map(str,lista_floatsACCx))+"]"
+                stringfloatAccy="["+";".join(map(str,lista_floatsACCy))+"]"
+                stringfloatAccz="["+";".join(map(str,lista_floatsACCz))+"]"
+
+                stringfloatRgrx="["+";".join(map(str, lista_floatsRgrx))+"]"
+                stringfloatRgry="["+";".join(map(str, lista_floatsRgry))+"]"
+                stringfloatRgrz="["+";".join(map(str, lista_floatsRgrz))+"]"
+                
+                unp= unp[0:7]
+
+                unp.append(stringfloatAccx)
+                unp.append(stringfloatAccy)
+                unp.append(stringfloatAccz)
+
+                unp.append(stringfloatRgrx)
+                unp.append(stringfloatRgry)
+                unp.append(stringfloatRgrz)
+               
+
             return {key:val for (key,val) in zip(keys, unp)}
         return p
 
     # el "OK" es un 1 que indica el incio de los datos, se puede utilizar como 0 para señalizar otra cosa
-    p0 = ["val"] #creo que esto es equivalente(?)
-    p1 = ["val", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
-    p2 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co"]
-    p3 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS"]
-    p4 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "amp_x", "frec_x", "amp_y", "frec_y", "amp_z", "frec_z"]
-    p5 = ["val", "Batt_level", "Timestamp", "Temp", "Pres", "Hum", "Co", "RMS", "acc_x", "acc_y", "acc_z"]
-    p = [p0, p1, p2, p3, p4, p5]
+    p0 = ["val", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
+    p1 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co"]
+    p2 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS"]
+    p3 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS","Ampx","Frecx","Ampy","Frecy","Ampz","Frecz"]
+    p4 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","Accx","Accy","Accz","Rgyrx","Rgyry","Rgyrz"]
+    p = [p0, p1, p2, p3, p4]
 
     try:
         return protFunc(protocol, p[protocol])(data)
