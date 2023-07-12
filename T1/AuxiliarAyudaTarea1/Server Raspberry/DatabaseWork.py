@@ -85,6 +85,7 @@ def read_conf():
         )
         
         print(res.fetchone())
+
         return res.fetchone()
 
 def update_conf(protocol_id, transport_layer):
