@@ -1,6 +1,7 @@
 import socket
 import Desempaquetamiento as dsmpq
 import DatabaseWork as dbw
+import time
 
 
 # --------------- CONFIGURACION PARA TCP ---------------
@@ -154,6 +155,9 @@ while True:
         # se maneja la configuracion inicial.
         (protocol,transport_layer) = dbw.read_conf()
         conf = ((str(protocol)+str(transport_layer)).encode())
+
+        #esperamos un poco
+        time.sleep(2)
         # se envia
         conn.send(conf)
         print("Configuración enviada desade Main Server :)")
