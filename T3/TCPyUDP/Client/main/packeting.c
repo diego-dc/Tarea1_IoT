@@ -9,7 +9,7 @@
 #include "esp_mac.h"
 #include "esp_log.h"
 
-unsigned short lengmsg[6] = {1, 6, 16, 20, 44};
+unsigned short lengmsg[6] = {1, 6, 16, 20, 44, 12016};
 
 unsigned short dataLength(char protocol){
     return lengmsg[(unsigned int)protocol] - 1;
@@ -19,27 +19,8 @@ unsigned short messageLength(char protocol){
     return 1 + 12 + dataLength(protocol);
 }
 
-// Arma un paquete para el protocolo de inicio, que busca solo respuesta
-char* dataprotocol00(char* head){
-    // seteo del header
-    char* ID = "D1";
-    memcpy((void*)&(head[0]), (void*)ID, 2);
-    uint8_t* MACaddrs = malloc(6);
-    esp_efuse_mac_get_default(MACaddrs);
-    memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    free(MACaddrs);
-    head[8] = 0;
-    head[9] = 0;
-    unsigned short dataLen = dataLength(0);
-    memcpy((void*)&(head[10]), (void*)&dataLen, 2);
-
-    char* msg = malloc(dataLength(0));
-    msg[0] = 1;
-    return msg;
-}
-
 // Arma un paquete para el protocolo 0, con la bateria
-char* dataprotocol0(char* head){
+char* dataprotocol1(char* head, int status){
     // seteo del header
     char* ID = "D1";
     memcpy((void*)&(head[0]), (void*)ID, 2);
@@ -47,8 +28,8 @@ char* dataprotocol0(char* head){
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
     free(MACaddrs);
-    head[8] = 0;
-    head[9] = 1;
+    head[8] = 1;
+    head[9] = status;
     unsigned short dataLen = dataLength(1);
     memcpy((void*)&(head[10]), (void*)&dataLen, 2);
 
@@ -67,15 +48,15 @@ char* dataprotocol0(char* head){
     return msg;
 }
 
-char* dataprotocol1(char* head){
+char* dataprotocol2(char* head, int status){
     // seteo del header
     char* ID = "D1";
     memcpy((void*)&(head[0]), (void*)ID, 2);
     uint8_t* MACaddrs = malloc(6);
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    head[8] = 0;
-    head[9] = 2;
+    head[8] = 2;
+    head[9] = status;
     unsigned short dataLen = dataLength(2);
     memcpy((void*)&(head[10]), (void*)&dataLen, 2);
     free(MACaddrs);
@@ -108,14 +89,14 @@ char* dataprotocol1(char* head){
 
 }
 
-char* dataprotocol2(char* head){
+char* dataprotocol3(char* head, int status){
     char* ID = "D1";
     memcpy((void*)&(head[0]), (void*)ID, 2);
     uint8_t* MACaddrs = malloc(6);
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    head[8] = 0;
-    head[9] = 3;
+    head[8] = 3;
+    head[9] = status;
     unsigned short dataLen = dataLength(3);
     memcpy((void*)&(head[10]), (void*)&dataLen, 2);
     free(MACaddrs);
@@ -151,14 +132,14 @@ char* dataprotocol2(char* head){
 
 }
 
-char* dataprotocol3(char* head){
+char* dataprotocol4(char* head, int status){
     char* ID = "D1";
     memcpy((void*)&(head[0]), (void*)ID, 2);
     uint8_t* MACaddrs = malloc(6);
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    head[8] = 0;
-    head[9] = 4;
+    head[8] = 4;
+    head[9] = status;
     unsigned short dataLen = dataLength(4);
     memcpy((void*)&(head[10]), (void*)&dataLen, 2);
     free(MACaddrs);
@@ -214,14 +195,14 @@ char* dataprotocol3(char* head){
 }
 
 
-char* dataprotocol4(char* head){
-		char* ID = "D1";
+char* dataprotocol5(char* head, int status){
+    char* ID = "D1";
     memcpy((void*)&(head[0]), (void*)ID, 2);
     uint8_t* MACaddrs = malloc(6);
     esp_efuse_mac_get_default(MACaddrs);
     memcpy((void*)&(head[2]), (void*)MACaddrs, 6); // consigue el MACaddrs
-    head[8] = 0;
-    head[9] = 4;
+    head[8] = 5;
+    head[9] = status;
     unsigned short dataLen = dataLength(5);
     memcpy((void*)&(head[10]), (void*)&dataLen, 2);
     free(MACaddrs);
@@ -258,6 +239,14 @@ char* dataprotocol4(char* head){
 	float* acc_z = acc_sensor_acc_z();
 	memcpy((void*) &(msg[16016]), (void*) acc_z, 8000); //8000 bytes
 
-    return msg;
+    float* arr_rgyr_x = rgyr_x();
+    memcpy((void*) &(msg[24016]), (void*) arr_rgyr_x, 8000); //8000 bytes
 
+    float* arr_rgyr_y = rgyr_y();
+    memcpy((void*) &(msg[24016]), (void*) arr_rgyr_y, 8000); //8000 bytes
+
+    float* arr_rgyr_z = rgyr_z();
+    memcpy((void*) &(msg[24016]), (void*) arr_rgyr_z, 8000); //8000 bytes
+
+    return msg;
 }

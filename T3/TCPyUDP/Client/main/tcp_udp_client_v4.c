@@ -63,25 +63,25 @@ void udp_client(char protocol) {
             char* message;
 
             int int_protocol = (int)protocol - 48;
-
+            int status = 21;
             switch (int_protocol) {
                 case 1:
-                    message = dataprotocol1(header);
+                    message = dataprotocol1(header, status);
                     break;
                 case 2:
-                    message = dataprotocol2(header);
+                    message = dataprotocol2(header, status);
                     break;
                 case 3:
-                    message = dataprotocol3(header);
+                    message = dataprotocol3(header, status);
                     break;
                 case 4:
-                    message = dataprotocol4(header);
+                    message = dataprotocol4(header, status);
                     break;
                 case 5:
-                    message = dataprotocol4(header);
+                    message = dataprotocol5(header, status);
                     break;
                 default:
-                    message = dataprotocol1(header);
+                    message = dataprotocol1(header, status);
                     break;
             }
             memcpy((void*)&(payload[0]), (void*)header, 12);
@@ -142,25 +142,25 @@ void tcp_client(char protocol) {
             char* message;
 
             int int_protocol = (int)protocol - 48;
-
+            int status = 21;
             switch (int_protocol) {
                 case 1:
-                    message = dataprotocol1(header);
+                    message = dataprotocol1(header, status);
                     break;
                 case 2:
-                    message = dataprotocol2(header);
+                    message = dataprotocol2(header, status);
                     break;
                 case 3:
-                    message = dataprotocol3(header);
+                    message = dataprotocol3(header, status);
                     break;
                 case 4:
-                    message = dataprotocol4(header);
+                    message = dataprotocol4(header, status);
                     break;
                 case 5:
-                    message = dataprotocol4(header);
+                    message = dataprotocol5(header, status);
                     break;
                 default:
-                    message = dataprotocol1(header);
+                    message = dataprotocol1(header, status);
                     break;
             }
             memcpy((void*)&(payload[0]), (void*)header, 12);

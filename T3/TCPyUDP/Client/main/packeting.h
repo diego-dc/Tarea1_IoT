@@ -5,10 +5,8 @@ unsigned short messageLength(char protocol);
 
 char* mensaje(char protocol, char transportLayer);
 
-char* dataprotocol00();
-
-char* dataprotocol0();
-char* dataprotocol1();
-char* dataprotocol2();
-char* dataprotocol3();
-char* dataprotocol4();
+char* dataprotocol1(char* header, int status);
+char* dataprotocol2(char* header, int status);
+char* dataprotocol3(char* header, int status);
+char* dataprotocol4(char* header, int status);
+char* dataprotocol5(char* header, int status);
