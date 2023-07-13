@@ -12,6 +12,7 @@ from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 from string import punctuation
 import DatabaseWork as dbw
+import RaspServer
 
 class GUIController:
     def __init__(self,parent):
@@ -175,10 +176,11 @@ class GUIController:
 
 
             print("Corriendo server")
-            script_path = "../TCPyUDP/Server/RaspServer.py"
+            RaspServer.main_server()
+            """ script_path = "../TCPyUDP/Server/RaspServer.py"
 
             # Ejecutar el script
-            subprocess.call(["python", script_path])
+            subprocess.call(["python", script_path]) """
 
             popup = QtWidgets.QMessageBox(parent = self.parent)
             popup.setWindowTitle("Pestaña")

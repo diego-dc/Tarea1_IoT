@@ -140,37 +140,38 @@ def UDP_connection():
 
 # ------------------------- MAIN SERVER ---------------------------------
 
-s = initial_conf()
+def main_server():
+    s = initial_conf()
 
-while True:
-    print("Aceptando conexion en Main server...")
-    conn, addr = s.accept()
+    while True:
+        print("Aceptando conexion en Main server...")
+        conn, addr = s.accept()
 
 
-    # Elegir la configuración
-    print("Esperando configuración socket en Main Server...")
-    initial_data = conn.recv(1024)
+        # Elegir la configuración
+        print("Esperando configuración socket en Main Server...")
+        initial_data = conn.recv(1024)
 
-    if initial_data == b'\0':
-        # se maneja la configuracion inicial.
-        (protocol,transport_layer) = dbw.read_conf()
-        conf = ((str(protocol)+str(transport_layer)).encode())
+        if initial_data == b'\0':
+            # se maneja la configuracion inicial.
+            (protocol,transport_layer) = dbw.read_conf()
+            conf = ((str(protocol)+str(transport_layer)).encode())
 
-        #esperamos un poco
-        #time.sleep(2)
-        # se envia
-        conn.send(conf)
-        print("Configuración enviada desade Main Server :)")
-        conn.close()
-        if transport_layer == 0:
-            print("Ejecutando server TCP desde Main")
-            TCP_connection()
+            #esperamos un poco
+            #time.sleep(2)
+            # se envia
+            conn.send(conf)
+            print("Configuración enviada desade Main Server :)")
+            conn.close()
+            if transport_layer == 0:
+                print("Ejecutando server TCP desde Main")
+                TCP_connection()
+
+            else:
+                print("Ejecutando server UDP desde Main")
+                UDP_connection()
 
         else:
-            print("Ejecutando server UDP desde Main")
-            UDP_connection()
-
-    else:
-        print("No se recibió soliciticud de configuración inical desde Main Server.")
-        conn.close()
-        print('Conexión cerrada de Main server')
+            print("No se recibió soliciticud de configuración inical desde Main Server.")
+            conn.close()
+            print('Conexión cerrada de Main server')
