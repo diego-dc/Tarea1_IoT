@@ -155,7 +155,7 @@ def create_initial_conf():
             cur = con.cursor()
             cur.execute(
                 "INSERT INTO Configuration (Status_conf, Protocol_conf, Acc_sampling, Acc_sensibility, Gyro_sensibility, BME688_sampling, Discontinous_time, TCP_port, UDP_port, Host_ip_addr, Ssid, Pass) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);",
-                (21, 2, 10, 2, 200, 1, 1, 3002, 3004, "192.168.100.155", "raspberry_pi", "grupo-iot")
+                (21, 2, 10, 2, 200, 1, 1, 3002, 3004, 192168100155, "raspberry_pi", "grupo-iot")
             )
             cur.commit()
         except Exception as e:
