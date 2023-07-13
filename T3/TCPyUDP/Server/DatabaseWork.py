@@ -118,8 +118,7 @@ def read_conf():
         database="IoT_tarea3"
     ) as con:
 
-        try:
-
+        def read_conf_from_db():
             cur = con.cursor()
             res = cur.execute("""
             SELECT
@@ -138,7 +137,16 @@ def read_conf():
             FROM Configuration
             """)
 
-            print(res.fetchone())
+            return res;
+
+        try:
+
+            res = read_conf_from_db();
+
+            if res.fetchone() == None:
+                create_initial_conf();
+                res = read_conf_from_db();
+
             return res.fetchone()
 
         except Exception as e:
@@ -166,15 +174,34 @@ def create_initial_conf():
             print("Ocurrió un error creando la configuración inicial")
             print(e)
 
-def update_conf(protocol_id, transport_layer):
-    with sql.connect("DB.sqlite") as con:
-        cur = con.cursor()
-        cur.execute(
-            '''UPDATE Conf
-            SET ProtocolId = ?,
-                TransportLayer = ?
-            WHERE rowid = 1
-            ''',
-            (protocol_id, transport_layer)
-        )
-        cur.commit()
+def update_conf(status_conf, protocol_conf, acc_sampling, acc_sensibility, gyro_sensibility, bme688_sampling, discontinous_time, tcp_port, udp_port, host_ip_addr, ssid, password):
+    with mysql.connector.connect(
+        host="localhost",
+        user="user-iot",
+        password="iot1psw",
+        database="IoT_tarea3"
+    ) as con:
+        try:
+            cur = con.cursor()
+            cur.execute(
+                '''UPDATE Configuration
+                SET Status_conf = ?,
+                    Protocol_conf = ?,
+                    Acc_sampling = ?,
+                    Acc_sensibility = ?,
+                    Gyro_sensibility = ?,
+                    BME688_sampling = ?,
+                    Discontinous_time = ?,
+                    TCP_PORT = ?,
+                    UDP_port = ?,
+                    Host_ip_addr = ?,
+                    Ssid = ?,
+                    Pass = ?
+                WHERE rowid = 1
+                ''',
+                (status_conf, protocol_conf, acc_sampling, acc_sensibility, gyro_sensibility, bme688_sampling, discontinous_time, tcp_port, udp_port, host_ip_addr, ssid, password)
+            )
+            cur.commit()
+        except Exception as e:
+            print("Ocurrió un error actualizando la configuración en la DB")
+            print(e)
