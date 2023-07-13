@@ -29,7 +29,7 @@
 
 static const char *TAG = "example";
 
-void udp_client(char protocol) {
+void udp_client(char protocol, char status) {
     while (1) {
         int addr_family = 0;
         int ip_protocol = 0;
@@ -105,7 +105,7 @@ void udp_client(char protocol) {
 
 }
 
-void tcp_client(char protocol) {
+void tcp_client(char protocol, char status) {
     char rx_buffer[128];
     char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
@@ -142,7 +142,6 @@ void tcp_client(char protocol) {
             char* message;
 
             int int_protocol = (int)protocol - 48;
-            int status = 21;
             switch (int_protocol) {
                 case 1:
                     message = dataprotocol1(header, status);
@@ -259,20 +258,20 @@ void tcp_config_socket(void) {
     }
     ESP_LOGI(TAG, "Configuración recibida");
     rx_buffer[len] = 0;
-    char protocol =  rx_buffer[0];
-    char transport_layer = rx_buffer[1];
+    char status =  rx_buffer[0];
+    char protocol = rx_buffer[1];
 
     shutdown(sock, 0);
     close(sock);
+    ESP_LOGI(TAG, "Status: %d", status);
     ESP_LOGI(TAG, "Protocol: %d", protocol);
-    ESP_LOGI(TAG, "Transport layer: %d", transport_layer);
 
-    if (transport_layer == '0') {
+    if (status == 21) {
         ESP_LOGI(TAG, "llamando TCP client");
-        tcp_client(protocol);
+        tcp_client(protocol, status);
     }
-    else {
+    else if (status == 23) {
         ESP_LOGI(TAG, "llamando UDP client");
-        udp_client(protocol);
+        udp_client(protocol, status);
     }
 }
