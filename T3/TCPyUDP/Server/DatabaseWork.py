@@ -154,8 +154,8 @@ def create_initial_conf():
         try:
             cur = con.cursor()
             cur.execute(
-                "INSERT INTO Configuration (Status_conf, Protocol_conf, Acc_sampling, Acc_sensibility, Gyro_sensibility, BME688_sampling, Discontinous_time, TCP_port, UDP_port, Host_ip_addr, Ssid, Pass) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",
-                (21, 2, 10, 2, 200, 1, 1, 3002, 3004, 192168100155, "raspberry_pi", "grupo-iot")
+                "INSERT INTO Configuration (Id_device, Status_conf, Protocol_conf, Acc_sampling, Acc_sensibility, Gyro_sensibility, BME688_sampling, Discontinous_time, TCP_port, UDP_port, Host_ip_addr, Ssid, Pass) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",
+                (1, 21, 2, 10, 2, 200, 1, 1, 3002, 3004, 192168100155, "raspberry_pi", "grupo-iot")
             )
             cur.commit()
         except Exception as e:
@@ -207,4 +207,3 @@ def update_conf(conf_dict):
         except Exception as e:
             print("Ocurrió un error actualizando la configuración en la DB")
             print(e)
-
