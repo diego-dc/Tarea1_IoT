@@ -1,3 +1,4 @@
 PyQt5
 PyQt5-tools
 pyqtgraph
+PlotData
