@@ -24,7 +24,7 @@ create_conf_table = '''CREATE TABLE Configuration (
     Discontinous_time INTEGER,
     TCP_port INTEGER,
     UDP_port INTEGER,
-    Host_ip_addr INTEGER,
+    Host_ip_addr VARCHAR(45),
     Ssid VARCHAR(45),
     Pass VARCHAR(45),
     PRIMARY KEY (Id_device)
