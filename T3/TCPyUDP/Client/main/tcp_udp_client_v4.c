@@ -258,15 +258,16 @@ void tcp_config_socket(void) {
     }
     ESP_LOGI(TAG, "Configuración recibida");
     rx_buffer[len] = 0;
-    char status =  rx_buffer[0];
+    char status = rx_buffer[0]
     char protocol = rx_buffer[1];
+    char discontinuous_time = rx_buffer[2];
 
     shutdown(sock, 0);
     close(sock);
     ESP_LOGI(TAG, "Status: %d", status);
     ESP_LOGI(TAG, "Protocol: %d", protocol);
 
-    if (status == 21) {
+    if (status == 21 || status == 22) {
         ESP_LOGI(TAG, "llamando TCP client");
         tcp_client(protocol, status);
     }
