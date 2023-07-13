@@ -154,7 +154,7 @@ def main_server():
 
         if initial_data == b'\0':
             # se maneja la configuracion inicial.
-            (status, protocol, discontinous_time) = dbw.read_conf()
+            (status, protocol, discontinous_time, tcp_port, udp_port) = dbw.read_conf()
             conf = bytearray()
             conf.append(status)
             conf.append(protocol)
