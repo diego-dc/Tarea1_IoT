@@ -133,20 +133,22 @@ def read_conf():
                 print("status: " + str(status))
                 protocol = respuesta[2]
                 print("protocol: " + str(protocol))
-                discontinous_time = respuesta[6]
-                print("discontinous_time: " + str(protocol))
-                tcp_port = respuesta[7]
-                udp_port = respuesta[8]
+                discontinous_time = respuesta[7]
+                print("discontinous_time: " + str(discontinous_time))
+                tcp_port = respuesta[8]
+                print("tcp_port: " + str(tcp_port))
+                udp_port = respuesta[9]
+                print("udp_port: " + str(udp_port))
                 return (status, protocol, discontinous_time, tcp_port, udp_port)
             else:
                 print("tabla vacía")
                 return
-            
+
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
             return
-        
+
         finally:
             if con:
                 con.close()
