@@ -61,7 +61,7 @@ def parseData(packet, attempts=1):
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
     # ver si estan bien o probar estos  "<BBl", "<BBlBfBf", "<BBlBfBff","<BBlBfBff6f"
-    protocol_unpack = ["<BBl", "<BBlBlBf", "<BBlBlBff", "<BBlBlBffffffff", "<BBlBlBf2000f2000f2000f2000f2000f2000f"]
+    protocol_unpack = ["<BBl", "<BBlBfBf", "<BBlBfBff", "<BBlBfBffffffff", "<BBlBfBf2000f2000f2000f2000f2000f2000f"]
     print("protocolo unpack :" + protocol_unpack[protocol])
     print("data to unpack: " + str(data))
     return unpack(protocol_unpack[protocol], data)
