@@ -21,10 +21,10 @@ def initial_conf():
     return s
 
 
-def conf_TCP():
+def conf_TCP(port):
     # "192.168.5.177"  # Standard loopback interface address (localhost)
     HOST = "192.168.100.155"#"localhost"
-    PORT = 3002  # Port to listen on (non-privileged ports are > 1023)
+    PORT = port  # Port to listen on (non-privileged ports are > 1023)
 
     s = socket.socket(socket.AF_INET, #internet
                     socket.SOCK_STREAM) #TCP
@@ -35,9 +35,9 @@ def conf_TCP():
 
 # --------------- CONFIGURACION PARA UDP ---------------
 
-def conf_UDP():
+def conf_UDP(port):
     UDP_IP = "192.168.100.155"# "localhost"
-    UDP_PORT = 3004
+    UDP_PORT = port
 
     sUDP = socket.socket(socket.AF_INET, # Internet
                         socket.SOCK_DGRAM) # UDP
@@ -48,8 +48,8 @@ def conf_UDP():
 
 # --------------- Funcionamiento PARA TCP ---------------
 
-def TCP_connection():
-    s = conf_TCP()
+def TCP_connection(port):
+    s = conf_TCP(port)
     while True:
         conn, addr = s.accept()
         print(f'Conectado por alguien ({addr[0]}) desde el puerto {addr[1]}')
@@ -109,8 +109,8 @@ def TCP_connection():
 
 # --------------- Funcionamiento PARA UDP ---------------
 
-def UDP_connection():
-    s = conf_UDP()
+def UDP_connection(port):
+    s = conf_UDP(port)
     while True:
         doc = b""
         while True:
@@ -168,11 +168,11 @@ def main_server():
             conn.close()
             if status == 21 or status == 22:
                 print("Ejecutando server TCP desde Main")
-                TCP_connection()
+                TCP_connection(tcp_port)
 
             else:
                 print("Ejecutando server UDP desde Main")
-                UDP_connection()
+                UDP_connection(udp_port)
 
         else:
             print("No se recibió soliciticud de configuración inical desde Main Server.")

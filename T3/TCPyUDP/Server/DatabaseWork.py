@@ -135,7 +135,9 @@ def read_conf():
                 print("protocol: " + str(protocol))
                 discontinous_time = respuesta[6]
                 print("discontinous_time: " + str(protocol))
-                return (status, protocol, discontinous_time)
+                tcp_port = respuesta[7]
+                udp_port = respuesta[8]
+                return (status, protocol, discontinous_time, tcp_port, udp_port)
             else:
                 print("tabla vacía")
                 return
