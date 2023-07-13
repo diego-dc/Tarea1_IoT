@@ -157,7 +157,7 @@ def create_initial_conf():
                 "INSERT INTO Configuration (Id_device, Status_conf, Protocol_conf, Acc_sampling, Acc_sensibility, Gyro_sensibility, BME688_sampling, Discontinous_time, TCP_port, UDP_port, Host_ip_addr, Ssid, Pass) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",
                 (1, 21, 2, 10, 2, 200, 1, 1, 3002, 3004, "192.168.100.155", "raspberry_pi", "grupo-iot")
             )
-            cur.commit()
+            con.commit()
         except Exception as e:
             print("Ocurrió un error creando la configuración inicial")
             print(e)
