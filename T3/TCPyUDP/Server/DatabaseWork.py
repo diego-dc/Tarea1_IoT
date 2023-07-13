@@ -142,7 +142,6 @@ def read_conf():
             print("status :" + status)
             protocol = respuesta[1]
             print("protocol :" + protocol)
-
             return (status, protocol)
         
         except Exception as e:
@@ -168,6 +167,10 @@ def create_initial_conf():
         except Exception as e:
             print("Ocurrió un error creando la configuración inicial")
             print(e)
+
+        finally:
+            if con:
+                con.close()
 
 def update_conf(conf_dict):
     with mysql.connector.connect(
@@ -214,3 +217,6 @@ def update_conf(conf_dict):
         except Exception as e:
             print("Ocurrió un error actualizando la configuración en la DB")
             print(e)
+        finally:
+            if con:
+                con.close()
