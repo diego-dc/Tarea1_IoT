@@ -77,7 +77,7 @@ create_data_2_table = '''CREATE TABLE Data_2 (
 );'''
 
 
-create_tables = [create_conf_table, create_data_1_table, create_logs_table, create_data_2_table]
+create_tables = [create_conf_table, create_logs_table, create_data_1_table, create_data_2_table]
 
 # Ejecutar la consulta para crear las tablas
 for create_table in create_tables:
