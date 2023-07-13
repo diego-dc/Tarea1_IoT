@@ -154,7 +154,7 @@ def main_server():
 
         if initial_data == b'\0':
             # se maneja la configuracion inicial.
-            (protocol,transport_layer) = dbw.read_conf()
+            (status, protocol) = dbw.read_conf()
             conf = ((str(protocol)+str(transport_layer)).encode())
 
             #esperamos un poco
@@ -163,7 +163,7 @@ def main_server():
             conn.send(conf)
             print("Configuración enviada desade Main Server :)")
             conn.close()
-            if transport_layer == 0:
+            if status == 21 or status == 22:
                 print("Ejecutando server TCP desde Main")
                 TCP_connection()
 
