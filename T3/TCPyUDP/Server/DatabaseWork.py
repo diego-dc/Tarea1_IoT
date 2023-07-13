@@ -129,7 +129,7 @@ def read_conf():
                 Acc_sensibility,
                 Gyro_sensibility,
                 BME688_sampling,
-                Discontinuos_time,
+                Discontinous_time,
                 TCP_port,
                 UDP_port,
                 Host_ip_addr,
