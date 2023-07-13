@@ -129,10 +129,10 @@ def read_conf():
             respuesta = cur.fetchone()
 
             if respuesta is not None:
-                status = respuesta[0]
-                print("status :" + status)
-                protocol = respuesta[1]
-                print("protocol :" + protocol)
+                status = respuesta[1]
+                print("status :" + str(status))
+                protocol = respuesta[2]
+                print("protocol :" + str(protocol))
                 return (status, protocol)
             else:
                 print("tabla vacía")
