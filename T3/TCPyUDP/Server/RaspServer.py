@@ -175,3 +175,7 @@ def main_server():
             print("No se recibió soliciticud de configuración inical desde Main Server.")
             conn.close()
             print('Conexión cerrada de Main server')
+
+
+if __name__ == "__main__":
+    main_server()
