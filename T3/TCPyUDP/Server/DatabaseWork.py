@@ -122,18 +122,7 @@ def read_conf():
             cur = con.cursor()
             res = cur.execute("""
             SELECT
-                Status_conf,
-                Protocol_conf,
-                Acc_sampling,
-                Acc_sensibility,
-                Gyro_sensibility,
-                BME688_sampling,
-                Discontinous_time,
-                TCP_port,
-                UDP_port,
-                Host_ip_addr,
-                Ssid,
-                Pass
+                *
             FROM Configuration
             """)
 
@@ -143,7 +132,7 @@ def read_conf():
             protocol = respuesta[1]
             print("protocol :" + protocol)
             return (status, protocol)
-        
+
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
