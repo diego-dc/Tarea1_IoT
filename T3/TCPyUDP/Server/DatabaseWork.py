@@ -137,7 +137,14 @@ def read_conf():
             FROM Configuration
             """)
 
-            return res.fetchone()
+            respuesta = res.fetchone()
+            status = respuesta[0]
+            print("status :" + status)
+            protocol = respuesta[1]
+            print("protocol :" + protocol)
+
+            return (status, protocol)
+        
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
