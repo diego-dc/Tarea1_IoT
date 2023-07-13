@@ -257,7 +257,7 @@ void tcp_config_socket(void) {
     }
     ESP_LOGI(TAG, "Configuración recibida");
     rx_buffer[len] = 0;
-    char status = rx_buffer[0]
+    char status = rx_buffer[0];
     char protocol = rx_buffer[1];
     char discontinuous_time = rx_buffer[2];
 
