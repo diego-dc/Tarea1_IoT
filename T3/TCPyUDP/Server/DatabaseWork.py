@@ -143,7 +143,7 @@ def read_conf():
 
             res = read_conf_from_db();
 
-            if res.fetchone() == None:
+            if res == None:
                 create_initial_conf();
                 res = read_conf_from_db();
 
