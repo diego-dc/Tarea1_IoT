@@ -164,6 +164,7 @@ def create_initial_conf():
                 (1, 21, 2, 10, 2, 200, 1, 1, 3002, 3004, "192.168.100.155", "raspberry_pi", "grupo-iot")
             )
             con.commit()
+            print("Se ingreso con exito")
         except Exception as e:
             print("Ocurrió un error creando la configuración inicial")
             print(e)
