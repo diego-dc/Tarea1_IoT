@@ -130,10 +130,12 @@ def read_conf():
 
             if respuesta is not None:
                 status = respuesta[1]
-                print("status :" + str(status))
+                print("status: " + str(status))
                 protocol = respuesta[2]
-                print("protocol :" + str(protocol))
-                return (status, protocol)
+                print("protocol: " + str(protocol))
+                discontinous_time = respuesta[6]
+                print("discontinous_time: " + str(protocol))
+                return (status, protocol, discontinous_time)
             else:
                 print("tabla vacía")
                 return

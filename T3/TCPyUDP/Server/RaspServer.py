@@ -154,8 +154,8 @@ def main_server():
 
         if initial_data == b'\0':
             # se maneja la configuracion inicial.
-            (status, protocol) = dbw.read_conf()
-            conf = ((str(protocol)+str(transport_layer)).encode())
+            (status, protocol, discountinous_time) = dbw.read_conf()
+            conf = (str(status)+(str(protocol)).encode())
 
             #esperamos un poco
             #time.sleep(2)
