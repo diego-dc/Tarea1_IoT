@@ -1,0 +1,73 @@
+#include <sensors_orig.c>
+#include <math.h>
+#include <stdlib.h>
+#include "esp_system.h"
+#include "esp_mac.h"
+#include "esp_log.h"
+
+
+unsigned short lengmsg[6] = {2, 6, 16, 20, 44, 12016};
+unsigned short dataLength(char protocol){
+    return lengmsg[ (unsigned int) protocol]-1;
+}
+
+//Genera el header de un mensaje, con la MAC, el protocolo, status, y el largo del mensaje.
+header(char* dest, char protocol, char transportLayer, short data_length){
+	char* ID = "D1";
+	memcpy((void*) &(dest[0]), (void*) ID, 2);
+	uint8_t* MACaddrs = malloc(6);
+	esp_efuse_mac_get_default(MACaddrs);
+	memcpy((void*) &(dest[2]), (void*) MACaddrs, 6);
+	dest[8]= transportLayer;
+	dest[9]= protocol;
+	memcpy((void*) &(dest[10]), (void*) &data_length, 2);
+	free(MACaddrs);
+}
+
+
+unsigned short messageLength(char protocol){
+    return 1+12+dataLength(protocol);
+}
+
+// Arma un paquete para el protocolo de inicio, que busca solo respuesta
+char* dataprotocol00(){
+    char* msg = malloc(dataLength(0));
+    msg[0] = 1;
+    return msg;
+}
+
+// Arma un paquete para el protocolo 0, con la bateria
+char* dataprotocol0(){
+
+    char* msg = malloc(dataLength(1));
+    char batt = '1';
+    msg[0] = batt;
+    long t = 0;
+    memcpy((void*) &(msg[1]), (void*) &t, 4);
+    return msg;
+}
+
+char* mensaje (char protocol, char transportLayer){
+	char* mnsj = malloc(messageLength(protocol));
+	mnsj[messageLength(protocol)-1]= '\0';
+	char* hdr = malloc(12);
+	unsigned short data_length = dataLength(protocol);
+	header(hdr, protocol, transportLayer, data_length);
+	char* data;
+	switch (protocol) {
+		case 0:
+			data = dataprotocol00();
+			break;
+		case 1:
+			data = dataprotocol0();
+			break;
+		default:
+			data = dataprotocol0();
+			break;
+	}
+	memcpy((void*) mnsj, (void*) hdr, 12);
+	memcpy((void*) &(mnsj[12]), (void*) data, data_length);
+	free(hdr);
+	free(data);
+	return mnsj;
+}
