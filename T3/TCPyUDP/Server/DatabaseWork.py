@@ -120,23 +120,32 @@ def read_conf():
 
         try:
             cur = con.cursor()
-            res = cur.execute("""
+            cur.execute("""
             SELECT
                 *
             FROM Configuration
             """)
 
-            respuesta = res.fetchone()
-            status = respuesta[0]
-            print("status :" + status)
-            protocol = respuesta[1]
-            print("protocol :" + protocol)
-            return (status, protocol)
+            respuesta = cur.fetchone()
 
+            if respuesta is not None:
+                status = respuesta[0]
+                print("status :" + status)
+                protocol = respuesta[1]
+                print("protocol :" + protocol)
+                return (status, protocol)
+            else:
+                print("tabla vacía")
+                return
+            
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
             return
+        
+        finally:
+            if con:
+                con.close()
 
 
 def create_initial_conf():
