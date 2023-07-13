@@ -105,7 +105,7 @@ void udp_client(char protocol, char status) {
 
 }
 
-void tcp_client(char protocol, char status) {
+void tcp_client(char protocol, char status, char discontinuous_time) {
     char rx_buffer[128];
     char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
@@ -192,11 +192,10 @@ void tcp_client(char protocol, char status) {
 
                 ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
                 ESP_LOGI(TAG, "%s", rx_buffer);
-                esp_sleep_enable_timer_wakeup(60*1000000);
-
-                shutdown(sock, 0);
-                close(sock);
-                esp_deep_sleep_start();
+                if (status == 22) {
+                    esp_sleep_enable_timer_wakeup(discontinuous_time*60*1000000);
+                    esp_deep_sleep_start();
+                }
             }
         }
 
@@ -269,7 +268,7 @@ void tcp_config_socket(void) {
 
     if (status == 21 || status == 22) {
         ESP_LOGI(TAG, "llamando TCP client");
-        tcp_client(protocol, status);
+        tcp_client(protocol, status, discontinuous_time);
     }
     else if (status == 23) {
         ESP_LOGI(TAG, "llamando UDP client");
