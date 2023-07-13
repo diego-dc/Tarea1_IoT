@@ -103,7 +103,7 @@ def read_conf():
     3 = Acc_sensibility,
     4 = Gyro_sensibility,
     5 = BME688_sampling,
-    6 = Discontinuos_time,
+    6 = Discontinous_time,
     7 = TCP_PORT,
     8 = UDP_port,
     9 = Host_ip_addr,
@@ -147,6 +147,24 @@ def read_conf():
             return
 
         return res.fetchone()
+
+def create_initial_conf():
+    with mysql.connector.connect(
+        host="localhost",
+        user="user-iot",
+        password="iot1psw",
+        database="IoT_tarea3"
+    ) as con:
+        try:
+            cur = con.cursor()
+            cur.execute(
+                "INSERT INTO Configuration (Status_conf, Protocol_conf, Acc_sampling, Acc_sensibility, Gyro_sensibility, BME688_sampling, Discontinous_time, TCP_PORT, UDP_port, Host_ip_addr, Ssid, Pass) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);",
+                (21, 2, 10, 2, 200, 1, 1, 3002, 3004, "192.168.100.155", "raspberry_pi", "grupo-iot")
+            )
+            cur.commit()
+        except Exception as e:
+            print("Ocurrió un error creando la configuración inicial")
+            print(e)
 
 def update_conf(protocol_id, transport_layer):
     with sql.connect("DB.sqlite") as con:
