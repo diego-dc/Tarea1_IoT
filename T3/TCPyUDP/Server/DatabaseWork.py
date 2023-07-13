@@ -14,16 +14,16 @@ def save_log(header, data):
         database="IoT_tarea3"
     ) as con:
         try:
-            
+
             # tomamos el status
             cur = con.cursor()
             cur.execute(f"SELECT Status_conf FROM Configuration WHERE Id_device={header['ID_device']}")
             status=cur.fetchone()[0]
-            
+
             query = "INSERT INTO Log ( Status_report, Protocol_report, Battery_Level, Conf_peripheral, configuration_Id_device )  VALUES(?, ?, ?, ?, ?);"
             params = (status, header["protocol"], data["Batt_level"], None, header["ID_Dev"])
             cur.execute(query, params)
-            
+
             # recuperamos el id del log
             id_log=cur.lastrowid
 
@@ -48,7 +48,7 @@ def save_data(header, data, id_device):
         password="iot1psw",
         database="IoT_tarea3"
     ) as con:
-        
+
         protocol = header["protocol"] - 1
 
         if data is None:
@@ -117,12 +117,12 @@ def read_conf():
         password="iot1psw",
         database="IoT_tarea3"
     ) as con:
-        
-        try: 
-        
+
+        try:
+
             cur = con.cursor()
             res = cur.execute("""
-            SELECT 
+            SELECT
                 Status_conf,
                 Protocol_conf,
                 Acc_sampling,
@@ -130,17 +130,17 @@ def read_conf():
                 Gyro_sensibility,
                 BME688_sampling,
                 Discontinuos_time,
-                TCP_PORT,
+                TCP_port,
                 UDP_port,
                 Host_ip_addr,
                 Ssid,
                 Pass
-            FROM Config
+            FROM Configuration
             """)
-            
+
             print(res.fetchone())
             return res.fetchone()
-        
+
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
