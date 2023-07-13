@@ -50,9 +50,6 @@ def parseData(packet, attempts=1):
         save_log(headerD, dataD)
         print("se guarda logs")
         # esto puede estar mal, ya que, si rellenamos la perdida de paquetes siempre sera el mismo size.
-        data_length = headerD["length"]
-        save_loss(headerD, dataD, attempts) # TODO ver lo de los attempts
-        print("se guarda perdida")
         print("\n------------ Desempaquetamiento Exitoso ------------\n")
         return (headerD,dataD)
     if dataD is None :
@@ -64,7 +61,7 @@ def parseData(packet, attempts=1):
 def protUnpack(protocol:int, data):
     # cada uno representa la forma de hacer unpack a cada protocolo. [0, 1, 2, 3, 4]
     # ver si estan bien o probar estos  "<BBl", "<BBlBfBf", "<BBlBfBff","<BBlBfBff6f"
-    protocol_unpack = ["<2Bf", "<2BfBfBf", "<2BfBfB2f", "<2BfBfB8f", "<BBlBfBf2000f2000f2000f2000f2000f2000f"]
+    protocol_unpack = ["<BBl", "<BBlBlBf", "<BBlBlBff", "<BBlBlBffffffff", "<BBlBlBf2000f2000f2000f2000f2000f2000f"]
     print("protocolo unpack :" + protocol_unpack[protocol])
     print("data to unpack: " + str(data))
     return unpack(protocol_unpack[protocol], data)
@@ -92,17 +89,17 @@ def dataDict(protocol:int, data):
         def p(data):
             unp = protUnpack(protocol, data)
 
-            if (protocol==4):
-                
+            if (protocol==5):
+
                 unp=list(unp)
                 lista_floatsACCx=unp[7:2007]
                 lista_floatsACCy=unp[2007:4007]
                 lista_floatsACCz=unp[4007:6007]
 
                 lista_floatsRgrx=unp[6007:8007]
-                lista_floatsRgry=unp[10007:120007]
-                lista_floatsRgrz=unp[4007:6007]
-        
+                lista_floatsRgry=unp[10007:12007]
+                lista_floatsRgrz=unp[12007:14007]
+
                 stringfloatAccx="["+";".join(map(str,lista_floatsACCx))+"]"
                 stringfloatAccy="["+";".join(map(str,lista_floatsACCy))+"]"
                 stringfloatAccz="["+";".join(map(str,lista_floatsACCz))+"]"
@@ -110,7 +107,7 @@ def dataDict(protocol:int, data):
                 stringfloatRgrx="["+";".join(map(str, lista_floatsRgrx))+"]"
                 stringfloatRgry="["+";".join(map(str, lista_floatsRgry))+"]"
                 stringfloatRgrz="["+";".join(map(str, lista_floatsRgrz))+"]"
-                
+
                 unp= unp[0:7]
 
                 unp.append(stringfloatAccx)
@@ -120,21 +117,21 @@ def dataDict(protocol:int, data):
                 unp.append(stringfloatRgrx)
                 unp.append(stringfloatRgry)
                 unp.append(stringfloatRgrz)
-               
+
 
             return {key:val for (key,val) in zip(keys, unp)}
         return p
 
     # el "OK" es un 1 que indica el incio de los datos, se puede utilizar como 0 para señalizar otra cosa
-    p0 = ["val", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
-    p1 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co"]
-    p2 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS"]
-    p3 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS","Ampx","Frecx","Ampy","Frecy","Ampz","Frecz"]
-    p4 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","Accx","Accy","Accz","Rgyrx","Rgyry","Rgyrz"]
-    p = [p0, p1, p2, p3, p4]
+    p1 = ["val", "Batt_level", "Timestamp"] #creo que esto es equivalente(?)
+    p2 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co"]
+    p3 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS"]
+    p4 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","RMS","Ampx","Frecx","Ampy","Frecy","Ampz","Frecz"]
+    p5 = ["val","Batt_level","Timestamp","Temp","Press","Hum","Co","Accx","Accy","Accz","Rgyrx","Rgyry","Rgyrz"]
+    p = [p1, p2, p3, p4, p5]
 
     try:
-        return protFunc(protocol, p[protocol])(data)
+        return protFunc(protocol, p[protocol - 1])(data)
     except Exception:
         print("Data unpacking Error:", traceback.format_exc())
         return None
