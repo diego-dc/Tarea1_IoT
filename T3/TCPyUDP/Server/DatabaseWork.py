@@ -118,7 +118,7 @@ def read_conf():
         database="IoT_tarea3"
     ) as con:
 
-        def read_conf_from_db():
+        try:
             cur = con.cursor()
             res = cur.execute("""
             SELECT
@@ -137,24 +137,12 @@ def read_conf():
             FROM Configuration
             """)
 
-            return res;
-
-        try:
-
-            res = read_conf_from_db();
-
-            if res == None:
-                create_initial_conf();
-                res = read_conf_from_db();
-
             return res.fetchone()
-
         except Exception as e:
             print("Algo salio mal en read_conf")
             print(e)
             return
 
-        return res.fetchone()
 
 def create_initial_conf():
     with mysql.connector.connect(
