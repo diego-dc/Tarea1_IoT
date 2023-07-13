@@ -1,4 +1,7 @@
 # Importamos lo que necesitamos
+import sys
+sys.path.append('../TCPyUDP\Server') 
+
 from iot import Ui_Dialog
 from PyQt5 import QtCore,QtGui,QtWidgets
 from PyQt5.QtCore import QTimer,Qt
@@ -7,6 +10,7 @@ from PlotData import getFromData1,getFromData2,getIDdevices
 from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 from string import punctuation
+import DatabaseWork as dbw
 
 class GUIController:
     def __init__(self,parent):
@@ -27,7 +31,7 @@ class GUIController:
         self.ui.ssid_field.textChanged.connect(self.disableButton)
         self.ui.pass_field.textChanged.connect(self.disableButton)
         self.ui.esp32_select.activated.connect(self.disableButton)
-        self.ui.config_btn.clicked.connect(self.prueba)
+        self.ui.config_btn.clicked.connect(self.run)
         self.ui.plot_1_start_btn.clicked.connect(self.start_timer1)
         self.ui.plot_2_start_btn.clicked.connect(self.start_timer2)
         self.ui.plot_3_start_btn.clicked.connect(self.start_timer3)
@@ -135,15 +139,42 @@ class GUIController:
         #self.ui.plot1.setBackground('w')
        # grafico.plot(tiempo, data)
 
-    def prueba(self):
-        popup = QtWidgets.QMessageBox(parent = self.parent)
-        popup.setWindowTitle("Prueba")
-        popup.setText(
-            "Discontinuous Time: " + self.ui.disc_time_field.toPlainText().translate(str.maketrans('', '',punctuation)) + "\n"
-            +  "TCP field: " + self.ui.port_tcp_field.toPlainText().translate(str.maketrans('', '',punctuation)) + "\n"
-            +  "UDP field: " + self.ui.port_udp_field.toPlainText().translate(str.maketrans('', '',punctuation)) + "\n"
-            +  "Host_Ip field: " + self.ui.host_ip_addr_field.toPlainText().translate(str.maketrans('', '',punctuation))
-        )
+    def run(self):
+
+
+        status_index = self.ui.status_select.currentIndex()
+
+
+        if status_index == 3 or status_index == 4 or status_index == 5:
+            popup = QtWidgets.QMessageBox(parent = self.parent)
+            popup.setWindowTitle("ERROR")
+            popup.setText("Ups! Aún no se ha implementado esta funcionalidad, vuelva más tarde.")
+            popup.exec_()
+            
+
+        else:   
+            # tomamos los inputs
+            initial_conf = {
+                "Status_conf": self.ui.status_select.currentText(),
+                "Protocol_conf": self.ui.id_protocol_select.currentText(),
+                "Acc_sampling": self.ui.acc_samp_field.currentText(), 
+                "Gyro_sensibility": self.ui.gyro_sens_field.currentText(),
+                "BME688_sampling": self.ui.bme_field.currentText(),
+                "Discontinuous_time" : self.ui.disc_time_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+                "TCP_port" : self.ui.port_tcp_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+                "UDP_port" : self.ui.port_udp_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+                "Host_ip_addr" : self.ui.host_ip_addr_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+                "Ssid": self.ui.ssid_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+                "Pass": self.ui.pass_field.toPlainText().translate(str.maketrans('', '',punctuation)),
+            }
+
+            dbw.update
+
+
+            popup = QtWidgets.QMessageBox(parent = self.parent)
+            popup.setWindowTitle("Pestaña")
+            popup.setText("El programa se encuentra corriendo." + "\n\n" + str(initial_conf))
+            popup.exec_()
         return 
 
     def llamar_a_display1(self):
