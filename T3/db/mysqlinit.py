@@ -14,7 +14,7 @@ cursor = conn.cursor()
 # Definir la consulta SQL para crear la tabla
 
 create_conf_table = '''CREATE TABLE Configuration (
-    Id_device INTEGER,
+    Id_device INTEGER NOT NULL,
     Status_conf INTEGER NOT NULL,
     Protocol_conf INTEGER NOT NULL,
     Acc_sampling INTEGER,
@@ -31,20 +31,20 @@ create_conf_table = '''CREATE TABLE Configuration (
 );'''
 
 create_logs_table = '''CREATE TABLE Log (
-    Id_device INTEGER UNIQUE,
+    Id_device INTEGER NOT NULL,
     Status_report INTEGER NOT NULL,
     Protocol_report INTEGER NOT NULL,
     Battery_level INTEGER,
     Conf_peripherial INTEGER,
     Time_client DATETIME,
     Time_server TIMESTAMP,
-    Configuration_Id_device INTEGER,
+    Configuration_Id_device INTEGER NOT NULL,
     PRIMARY KEY (Id_device),
     FOREIGN KEY (Configuration_Id_device) REFERENCES Configuration (Id_device)
 );'''
 
 create_data_1_table = '''CREATE TABLE Data_1 (
-    Id_device INTEGER,
+    Id_device INTEGER NOT NULL,
     Temperature INTEGER NOT NULL,
     Press INTEGER NOT NULL,
     Hum INTEGER,
@@ -63,7 +63,7 @@ create_data_1_table = '''CREATE TABLE Data_1 (
 );'''
 
 create_data_2_table = '''CREATE TABLE Data_2 (
-    Id_device INTEGER,
+    Id_device INTEGER NOT NULL,
     Racc_x FLOAT,
     Racc_y FLOAT,
     Racc_z FLOAT,
