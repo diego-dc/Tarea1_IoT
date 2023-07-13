@@ -162,7 +162,7 @@ def create_initial_conf():
             print("Ocurrió un error creando la configuración inicial")
             print(e)
 
-def update_conf(status_conf, protocol_conf, acc_sampling, acc_sensibility, gyro_sensibility, bme688_sampling, discontinous_time, tcp_port, udp_port, host_ip_addr, ssid, password):
+def update_conf(conf_dict):
     with mysql.connector.connect(
         host="localhost",
         user="user-iot",
@@ -173,23 +173,38 @@ def update_conf(status_conf, protocol_conf, acc_sampling, acc_sensibility, gyro_
             cur = con.cursor()
             cur.execute(
                 '''UPDATE Configuration
-                SET Status_conf = ?,
-                    Protocol_conf = ?,
-                    Acc_sampling = ?,
-                    Acc_sensibility = ?,
-                    Gyro_sensibility = ?,
-                    BME688_sampling = ?,
-                    Discontinous_time = ?,
-                    TCP_port = ?,
-                    UDP_port = ?,
-                    Host_ip_addr = ?,
-                    Ssid = ?,
-                    Pass = ?
-                WHERE rowid = 1
+                SET Status_conf = %s,
+                    Protocol_conf = %s,
+                    Acc_sampling = %s,
+                    Acc_sensibility = %s,
+                    Gyro_sensibility = %s,
+                    BME688_sampling = %s,
+                    Discontinous_time = %s,
+                    TCP_port = %s,
+                    UDP_port = %s,
+                    Host_ip_addr = %s,
+                    Ssid = %s,
+                    Pass = %s
+                LIMIT 1
                 ''',
-                (status_conf, protocol_conf, acc_sampling, acc_sensibility, gyro_sensibility, bme688_sampling, discontinous_time, tcp_port, udp_port, host_ip_addr, ssid, password)
+                (
+                    conf_dict["Status_conf"],
+                    conf_dict["Protocol_conf"],
+                    conf_dict["Acc_sampling"],
+                    conf_dict["Acc_sensibility"],
+                    conf_dict["Gyro_sensibility"],
+                    conf_dict["BME688_sampling"],
+                    conf_dict["Discontinuous_time"],
+                    conf_dict["TCP_port"],
+                    conf_dict["UDP_port"],
+                    conf_dict["Host_ip_addr"],
+                    conf_dict["Ssid"],
+                    conf_dict["Pass"]
+                )
             )
-            cur.commit()
+            con.commit()
+            print("Se actualizó correctamente!")
         except Exception as e:
             print("Ocurrió un error actualizando la configuración en la DB")
             print(e)
+

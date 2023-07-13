@@ -2,6 +2,7 @@
 import sys
 sys.path.append('../TCPyUDP\Server') 
 
+import subprocess
 from iot import Ui_Dialog
 from PyQt5 import QtCore,QtGui,QtWidgets
 from PyQt5.QtCore import QTimer,Qt
@@ -157,7 +158,8 @@ class GUIController:
             initial_conf = {
                 "Status_conf": self.ui.status_select.currentText(),
                 "Protocol_conf": self.ui.id_protocol_select.currentText(),
-                "Acc_sampling": self.ui.acc_samp_field.currentText(), 
+                "Acc_sampling": self.ui.acc_samp_field.currentText(),
+                "Acc_sensibility": self.ui.acc_sens_field.currentText(),
                 "Gyro_sensibility": self.ui.gyro_sens_field.currentText(),
                 "BME688_sampling": self.ui.bme_field.currentText(),
                 "Discontinuous_time" : self.ui.disc_time_field.toPlainText().translate(str.maketrans('', '',punctuation)),
@@ -168,8 +170,15 @@ class GUIController:
                 "Pass": self.ui.pass_field.toPlainText().translate(str.maketrans('', '',punctuation)),
             }
 
-            dbw.update
+            # actualizar la conf inicial
+            dbw.update_conf(initial_conf)
 
+
+            print("Corriendo server")
+            script_path = "../TCPyUDP/Server/RaspServer.py"
+
+            # Ejecutar el script
+            subprocess.call(["python", script_path])
 
             popup = QtWidgets.QMessageBox(parent = self.parent)
             popup.setWindowTitle("Pestaña")
